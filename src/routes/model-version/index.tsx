@@ -84,7 +84,7 @@ export const ModelVersion = () => {
                     </Button>
                 </div>
             </header>
-            <Table className='whitespace-nowrap overflow-x-scroll'>
+            <Table>
                 <TableHead>
                     <TableRow>
                         <TableHeaderCell>Version ID</TableHeaderCell>
