@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { ClipboardIcon } from '@heroicons/react/24/outline';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { BarLoader } from 'react-spinners';
+
+import { useGetModel } from '@/hooks';
 
 import {
     Badge,
@@ -61,6 +64,8 @@ export const ModelVersion = () => {
 
     const modelId = pathname.split('/')[pathname.split('/').length - 1];
 
+    const { data, loading, error } = useGetModel(modelId);
+
     const [isTooltipHidden, setIsTooltipHidden] = useState(true);
     const [copiedVersionId, setCopiedVersionId] = useState('');
 
@@ -78,6 +83,13 @@ export const ModelVersion = () => {
         }
     };
 
+    const modelName = data && data.getMLModel && data.getMLModel.modelName;
+
+    if (loading) return <BarLoader color='#4f46e5' width='250' />;
+
+    // TODO: Better UX
+    if (error) return <p>Error! {error.message}</p>;
+
     return (
         <div className='w-full flex flex-col gap-12'>
             {/* Page Header */}
@@ -87,13 +99,13 @@ export const ModelVersion = () => {
                         <BreadcrumbItem href='/dashboard/home'>Dashboard</BreadcrumbItem>
                         <BreadcrumbItem href='/dashboard/models'>Models</BreadcrumbItem>
                         <BreadcrumbItem href={`/dashboard/models/${modelId}`}>
-                            Housing Market Clustering
+                            {modelName}
                         </BreadcrumbItem>
                     </Breadcrumbs>
                 </div>
                 <div className='flex items-center justify-between gap-0'>
                     <h2 className='text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight'>
-                        Housing Market Clustering
+                        {modelName}
                     </h2>
                     <Button
                         onClick={() => navigate(`/dashboard/models/${modelId}/create`)}
