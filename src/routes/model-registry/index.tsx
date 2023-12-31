@@ -25,6 +25,9 @@ import { useListModels } from './api';
 import { ArchiveModal } from './components';
 
 export const ModelRegistry = () => {
+    const [limit, setLimit] = useState<10 | 25 | 50>(10);
+    const [offset, setOffset] = useState(0);
+
     const [selectedModel, setSelectedModel] = useState({
         modelId: '',
         modelName: '',
@@ -33,7 +36,7 @@ export const ModelRegistry = () => {
 
     const navigate = useNavigate();
 
-    const { data, loading, error, refetch } = useListModels();
+    const { data, loading, error, refetch } = useListModels(limit, offset);
 
     // TODO: Make UX Prettier
     if (error) return <p>Error: {error.message}</p>;
