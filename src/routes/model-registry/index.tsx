@@ -3,6 +3,8 @@ import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 
+import type { Limit } from '@/types/limit';
+
 import {
     BreadcrumbItem,
     Breadcrumbs,
@@ -14,6 +16,8 @@ import {
     DropdownItem,
     DropdownItems,
     Input,
+    Select,
+    SelectItem,
     Table,
     TableBody,
     TableCell,
@@ -27,7 +31,7 @@ import { useListModels } from './api';
 import { ArchiveModal } from './components';
 
 export const ModelRegistry = () => {
-    const [limit, setLimit] = useState<10 | 25 | 50>(10);
+    const [limit, setLimit] = useState<Limit>(10);
     const [offset, setOffset] = useState(0);
 
     const [selectedModel, setSelectedModel] = useState({
@@ -76,6 +80,14 @@ export const ModelRegistry = () => {
                                 placeholder='Search Models'
                             />
                         </div>
+                        <Select
+                            className='basis-1/6'
+                            onChange={(e) => setLimit(parseInt(e.target.value) as Limit)}
+                        >
+                            <SelectItem value='10'>10 Results</SelectItem>
+                            <SelectItem value='25'>25 Results</SelectItem>
+                            <SelectItem value='50'>50 Results</SelectItem>
+                        </Select>
                     </div>
                     {!loading ? (
                         <Card>
