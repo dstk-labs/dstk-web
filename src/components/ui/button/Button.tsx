@@ -14,7 +14,7 @@ const buttonVariants = cva(
                     'border-gray-300 bg-white text-gray-700 hover:bg-gray-100 focus:ring focus:ring-gray-100 disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-400',
                 ghost: 'border-transparent bg-transparent text-gray-700 shadow-none hover:bg-gray-100 disabled:bg-transparent disabled:text-gray-400',
                 destructive:
-                    'border-red-600 bg-red-600 hover:border-red-500 hover:bg-red-500 focus:ring focus:ring-red-200 disabled:border-red-300 disabled:bg-red-300',
+                    'border-red-600 bg-red-600 text-white hover:border-red-500 hover:bg-red-500 focus:ring focus:ring-red-200 disabled:border-red-300 disabled:bg-red-300',
             },
             size: {
                 xs: 'px-3 py-1 text-xs',
