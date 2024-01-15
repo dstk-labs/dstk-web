@@ -24,7 +24,7 @@ const navigation = [
         links: [
             {
                 name: 'Settings',
-                href: '/settings/user-settings',
+                href: '/settings',
                 icon: <Cog6ToothIcon />,
             },
         ],

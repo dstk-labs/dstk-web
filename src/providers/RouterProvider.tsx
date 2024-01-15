@@ -74,7 +74,7 @@ export const RouterProvider = () => {
                             element: <UploadFiles />,
                         },
                         {
-                            path: '/settings/user-settings',
+                            path: '/settings',
                             element: <UserSettings />,
                         },
                     ],

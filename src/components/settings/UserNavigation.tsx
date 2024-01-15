@@ -3,9 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { cn } from '@/lib';
 
 const TABS = [
-    { name: 'Settings', href: '/settings/user-settings' },
+    { name: 'User Settings', href: '/settings' },
     { name: 'API Keys', href: '/settings/api-keys' },
-    { name: 'Teams', href: '/settings/teams' },
     { name: 'Storage Providers', href: '/settings/storage-providers' },
 ];
 
