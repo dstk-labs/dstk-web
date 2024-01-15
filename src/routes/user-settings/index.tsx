@@ -3,7 +3,7 @@ import { BreadcrumbItem, Breadcrumbs } from '@/components/ui';
 
 export const UserSettings = () => {
     return (
-        <div className='w-full flex flex-col gap-8'>
+        <div className='w-full flex flex-col gap-6'>
             <header className='flex flex-col gap-3'>
                 <Breadcrumbs>
                     <BreadcrumbItem href='/dashboard'>Dashboard</BreadcrumbItem>
