@@ -7,7 +7,7 @@ export const APIKeysHeader = () => {
                 <BreadcrumbItem href='/settings'>Settings</BreadcrumbItem>
                 <BreadcrumbItem href='/settings/api-keys'>API Keys</BreadcrumbItem>
             </Breadcrumbs>
-            <h1 className='text-2xl font-medium text-gray-700 sm:text-3xl'>Model Registry</h1>
+            <h1 className='text-2xl font-medium text-gray-700 sm:text-3xl'>API Keys</h1>
         </header>
     );
 };
