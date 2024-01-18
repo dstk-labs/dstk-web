@@ -7,7 +7,6 @@ const LIST_TEAM_MEMBERS: TypedDocumentNode<ListTeamMembers> = gql`
     query ListTeamMembers($teamId: String!) {
         listTeamMembers(teamId: $teamId) {
             isAdmin
-            isApproved
             primaryEmail
             userName
             userId
