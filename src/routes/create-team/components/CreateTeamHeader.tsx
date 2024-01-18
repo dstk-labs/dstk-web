@@ -6,8 +6,8 @@ export const CreateTeamHeader = () => {
             <div>
                 <Breadcrumbs>
                     <BreadcrumbItem href='/dashboard/home'>Dashboard</BreadcrumbItem>
-                    <BreadcrumbItem href='/dashboard/teams'>Teams</BreadcrumbItem>
-                    <BreadcrumbItem href='/dashboard/models/create'>Create</BreadcrumbItem>
+                    <BreadcrumbItem href='/teams'>Teams</BreadcrumbItem>
+                    <BreadcrumbItem href='/teams/create'>Create</BreadcrumbItem>
                 </Breadcrumbs>
             </div>
             <h2 className='text-2xl font-medium text-gray-700 sm:text-3xl'>Register New Team</h2>
