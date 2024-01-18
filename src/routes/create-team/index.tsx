@@ -1,1 +1,9 @@
-export const CreateTeam = () => <div>Create Team Here</div>;
+import { CreateTeamHeader } from './components';
+
+export const CreateTeam = () => {
+    return (
+        <div className='w-full flex flex-col gap-8'>
+            <CreateTeamHeader />
+        </div>
+    );
+};
