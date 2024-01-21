@@ -17,10 +17,11 @@ const addTeamMemberInputSchema = z.object({
 type AddTeamMemberInput = z.infer<typeof addTeamMemberInputSchema>;
 
 type AddTeamMemberFormProps = {
+    currentTeamMembers: User[];
     users: User[];
 };
 
-export const AddTeamMemberForm = ({ users }: AddTeamMemberFormProps) => {
+export const AddTeamMemberForm = ({ currentTeamMembers, users }: AddTeamMemberFormProps) => {
     const navigate = useNavigate();
     const { teamId } = useParams();
 
@@ -47,6 +48,10 @@ export const AddTeamMemberForm = ({ users }: AddTeamMemberFormProps) => {
         });
     };
 
+    const usersNotJoined = users.filter(
+        (user) => !currentTeamMembers.some((member) => member.userId === user.userId),
+    );
+
     return (
         <>
             <Form<AddTeamMemberInput, typeof addTeamMemberInputSchema>
@@ -61,7 +66,7 @@ export const AddTeamMemberForm = ({ users }: AddTeamMemberFormProps) => {
                             <SelectField
                                 error={formState.errors.userId}
                                 label='User'
-                                options={users.map((user) => ({
+                                options={usersNotJoined.map((user) => ({
                                     id: user.userId,
                                     label: user.userName,
                                     value: user.userId,
