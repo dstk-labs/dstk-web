@@ -18,6 +18,9 @@ const LIST_MODEL_VERSIONS: TypedDocumentNode<MLModelVersionList> = gql`
                     dateCreated
                     modelVersionId
                     numericVersion
+                    modelId {
+                        modelId
+                    }
                 }
             }
             pageInfo {
