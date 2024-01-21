@@ -20,6 +20,11 @@ const LIST_MODEL_VERSIONS: TypedDocumentNode<MLModelVersionList> = gql`
                     numericVersion
                 }
             }
+            pageInfo {
+                continuationToken
+                hasNextPage
+                hasPreviousPage
+            }
         }
     }
 `;
