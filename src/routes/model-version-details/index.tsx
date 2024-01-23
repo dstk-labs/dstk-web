@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 
 import { useGetMLModelVersion } from './api';
-import { MLVersionMetadata, ModelVersionDetailsHeader } from './components';
+import { FileExplorer, MLVersionMetadata, ModelVersionDetailsHeader } from './components';
 
 export const ModelVersionDetails = () => {
     const { pathname } = useLocation();
@@ -23,7 +23,7 @@ export const ModelVersionDetails = () => {
             <div className='w-full flex flex-col gap-12'>
                 <ModelVersionDetailsHeader mlModelVersion={data.getMLModelVersion} />
                 <MLVersionMetadata mlModelVersion={data.getMLModelVersion} />
-                {/* TODO: File Explorer */}
+                <FileExplorer />
             </div>
         );
     } else {
