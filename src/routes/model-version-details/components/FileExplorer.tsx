@@ -10,13 +10,15 @@ import {
     TableRow,
 } from '@/components/ui';
 import type { StorageProviderObjectList } from '@/types/StorageProvider';
-import { isDirectory } from '../lib';
+import { createDirectory } from '../lib';
 
 type FileExplorerProps = {
     objects: StorageProviderObjectList;
 };
 
 export const FileExplorer = ({ objects }: FileExplorerProps) => {
+    const files = createDirectory(objects);
+
     return (
         <Card>
             <Table>
@@ -29,20 +31,28 @@ export const FileExplorer = ({ objects }: FileExplorerProps) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {objects.listObjectsForModelVersion.edges.map((edge) => (
-                        <TableRow key={edge.node.name}>
-                            <TableCell>
-                                {isDirectory(edge.node.name) ? (
+                    <>
+                        {files.directories.map((directory) => (
+                            <TableRow key={directory.name}>
+                                <TableCell>
                                     <FolderIcon className='w-5 h-5' />
-                                ) : (
+                                </TableCell>
+                                <TableCell>{directory.name.split('/')[0]}</TableCell>
+                                <TableCell>{directory.size}</TableCell>
+                                <TableCell>{directory.lastModified}</TableCell>
+                            </TableRow>
+                        ))}
+                        {files.files.map((file) => (
+                            <TableRow key={file.name}>
+                                <TableCell>
                                     <DocumentIcon className='w-5 h-5' />
-                                )}
-                            </TableCell>
-                            <TableCell>{edge.node.name}</TableCell>
-                            <TableCell>{edge.node.size}</TableCell>
-                            <TableCell>{edge.node.lastModified}</TableCell>
-                        </TableRow>
-                    ))}
+                                </TableCell>
+                                <TableCell>{file.name}</TableCell>
+                                <TableCell>{file.size}</TableCell>
+                                <TableCell>{file.lastModified}</TableCell>
+                            </TableRow>
+                        ))}
+                    </>
                 </TableBody>
             </Table>
         </Card>

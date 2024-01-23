@@ -10,7 +10,7 @@ type ListObjectsPaginationInput = {
 };
 
 export const listObjectsPaginationAtom = atom<ListObjectsPaginationInput>({
-    first: 10,
+    first: 25,
     continuationTokens: [undefined],
     hasPreviousPage: false,
     hasNextPage: false,
