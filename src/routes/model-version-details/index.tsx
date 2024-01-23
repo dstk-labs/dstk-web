@@ -2,7 +2,12 @@ import { useParams } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 
 import { useGetMLModelVersion, useListStorageProviderObjects } from './api';
-import { FileExplorer, MLVersionMetadata, ModelVersionDetailsHeader } from './components';
+import {
+    FileExplorer,
+    FileExplorerPagination,
+    MLVersionMetadata,
+    ModelVersionDetailsHeader,
+} from './components';
 
 export const ModelVersionDetails = () => {
     const { versionId } = useParams();
@@ -32,6 +37,11 @@ export const ModelVersionDetails = () => {
                 <ModelVersionDetailsHeader mlModelVersion={model.getMLModelVersion} />
                 <MLVersionMetadata mlModelVersion={model.getMLModelVersion} />
                 <FileExplorer objects={objects} />
+                <FileExplorerPagination
+                    continuationToken={
+                        objects.listObjectsForModelVersion.pageInfo.continuationToken
+                    }
+                />
             </div>
         );
     } else {

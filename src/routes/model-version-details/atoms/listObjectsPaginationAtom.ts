@@ -6,13 +6,13 @@ type ListObjectsPaginationInput = {
     continuationTokens: (string | undefined)[];
     hasPreviousPage: boolean;
     hasNextPage: boolean;
-    prefix?: string;
+    prefixes: (string | undefined)[];
 };
 
 export const listObjectsPaginationAtom = atom<ListObjectsPaginationInput>({
-    first: 25,
+    first: 10,
     continuationTokens: [undefined],
     hasPreviousPage: false,
     hasNextPage: false,
-    prefix: undefined,
+    prefixes: [undefined],
 });
