@@ -12,23 +12,13 @@ import {
 export const ModelVersionDetails = () => {
     const { versionId } = useParams();
 
-    const {
-        data: model,
-        loading: modelLoading,
-        error: modelError,
-    } = useGetMLModelVersion(versionId || '');
-    const {
-        data: objects,
-        loading: objectsLoading,
-        error: objectsError,
-    } = useListStorageProviderObjects(versionId || '');
+    const { data: model, loading: modelLoading } = useGetMLModelVersion(versionId || '');
+    const { data: objects, loading: objectsLoading } = useListStorageProviderObjects(
+        versionId || '',
+    );
 
     if (modelLoading || objectsLoading) {
         return <BarLoader color='#2563eb' width='250px' />;
-    }
-
-    if (modelError || objectsError) {
-        return <p>Error loading model information.</p>;
     }
 
     if (model && model.getMLModelVersion && objects && objects.listObjectsForModelVersion) {
