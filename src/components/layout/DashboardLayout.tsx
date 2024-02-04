@@ -1,4 +1,5 @@
 import {
+    ArrowRightEndOnRectangleIcon,
     ChevronRightIcon,
     ComputerDesktopIcon,
     MoonIcon,
@@ -7,9 +8,11 @@ import {
 import { Button, Tab, TabGroup, TabList } from '@tremor/react';
 import { Link, Outlet, useMatches, type UIMatch } from 'react-router-dom';
 
+import { useTheme } from '@/hooks/theme';
+import { useLogout } from '@/hooks';
+
 import { GitHubIcon } from '../icons';
 import { Logo } from '../logo';
-import { useTheme } from '@/hooks/theme';
 
 const ROUTES = [
     {
@@ -51,78 +54,93 @@ export const DashboardLayout = () => {
 
     const { theme, setTheme } = useTheme();
 
+    const logout = useLogout();
+
     return (
-        <div className='flex flex-col gap-6 py-4 sm:py-6 lg:py-8'>
+        <div className='min-h-screen flex flex-col py-4 sm:py-6 lg:py-8'>
             {/* Header */}
-            <div className='flex items-center justify-between px-4 sm:px-6 lg:px-8'>
-                <div className='flex items-center gap-2'>
-                    <Logo />
-                    <h1 className='text-tremor-title font-bold text-tremor-content-strong dark:text-dark-tremor-content-strong'>
-                        Data Science Toolkit
-                    </h1>
+            <div className='flex flex-col'>
+                <div className='flex items-center justify-between px-4 sm:px-6 lg:px-8'>
+                    <div className='flex items-center gap-2'>
+                        <Logo />
+                        <h1 className='text-tremor-title font-bold text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                            Data Science Toolkit
+                        </h1>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                        <Button icon={GitHubIcon} variant='light' />
+                        <div className='h-5 border-l border-tremor-border dark:border-dark-tremor-border border-1' />
+                        <Button
+                            className={theme === 'light' ? 'text-tremor-brand-emphasis' : ''}
+                            icon={SunIcon}
+                            onClick={() => setTheme('light')}
+                            variant='light'
+                        />
+                        <Button
+                            className={
+                                theme === 'dark' ? 'dark:text-dark-tremor-brand-emphasis' : ''
+                            }
+                            icon={MoonIcon}
+                            onClick={() => setTheme('dark')}
+                            variant='light'
+                        />
+                        <Button
+                            className={
+                                theme === 'system'
+                                    ? 'text-tremor-brand-emphasis dark:text-dark-tremor-brand-emphasis'
+                                    : ''
+                            }
+                            icon={ComputerDesktopIcon}
+                            onClick={() => setTheme('system')}
+                            variant='light'
+                        />
+                        <div className='h-5 border-l border-tremor-border dark:border-dark-tremor-border border-1' />
+                        <Button
+                            icon={ArrowRightEndOnRectangleIcon}
+                            onClick={() => logout()}
+                            tooltip='Logout'
+                            variant='light'
+                        />
+                    </div>
                 </div>
-                <div className='flex items-center gap-2'>
-                    <Button icon={GitHubIcon} variant='light' />
-                    <div className='h-5 border-l border-tremor-border dark:border-dark-tremor-border border-1' />
-                    <Button
-                        className={theme === 'light' ? 'text-tremor-brand-emphasis' : ''}
-                        icon={SunIcon}
-                        onClick={() => setTheme('light')}
-                        variant='light'
-                    />
-                    <Button
-                        className={theme === 'dark' ? 'dark:text-dark-tremor-brand-emphasis' : ''}
-                        icon={MoonIcon}
-                        onClick={() => setTheme('dark')}
-                        variant='light'
-                    />
-                    <Button
-                        className={
-                            theme === 'system'
-                                ? 'text-tremor-brand-emphasis dark:text-dark-tremor-brand-emphasis'
-                                : ''
-                        }
-                        icon={ComputerDesktopIcon}
-                        onClick={() => setTheme('system')}
-                        variant='light'
-                    />
-                </div>
-            </div>
-            {/* Navigation Menu */}
-            <TabGroup index={currentIndex}>
-                <TabList className='px-4 sm:px-6 lg:px-8'>
-                    {ROUTES.map((route) => (
-                        <Tab key={route.to}>
-                            <Link to={route.to}>{route.name}</Link>
-                        </Tab>
-                    ))}
-                </TabList>
-            </TabGroup>
-            {/* Breadcrumb Menu */}
-            <ol className='flex items-center text-sm leading-6 whitespace-nowrap min-w-0 px-4 sm:px-6 lg:px-8'>
-                <li className='text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis'>
-                    Dashboard
-                </li>
-                {crumbs.map((crumb) => (
-                    <li
-                        className='group flex items-center text-tremor-content-emphasis hover:text-tremor-content-strong dark:text-dark-tremor-content-emphasis dark:hover:text-dark-tremor-content-strong'
-                        key={crumb.href}
-                    >
-                        {/* Yeah I CSS like that */}
-                        <ChevronRightIcon className='h-4 w-4 mx-1 text-slate-400' />
-                        <Link
-                            className='text-sm group-last:font-semibold group-last:text-tremor-content-strong group-last:truncate group-last:dark:text-dark-tremor-content-strong'
-                            to={crumb.href}
-                        >
-                            {crumb.label}
-                        </Link>
+                {/* Navigation Menu */}
+                <TabGroup className='pt-4' index={currentIndex}>
+                    <TabList className='px-4 sm:px-6 lg:px-8'>
+                        {ROUTES.map((route) => (
+                            <Tab key={route.to}>
+                                <Link to={route.to}>{route.name}</Link>
+                            </Tab>
+                        ))}
+                    </TabList>
+                </TabGroup>
+                {/* Breadcrumb Menu */}
+                <ol className='py-2 flex items-center text-sm leading-6 whitespace-nowrap min-w-0 px-4 border-b border-tremor-border dark:border-dark-tremor-border sm:px-6 lg:px-8'>
+                    <li className='text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis'>
+                        Dashboard
                     </li>
-                ))}
-            </ol>
-            {/* Page Content */}
-            <main className='pt-2 px-4 sm:px-6 lg:px-8'>
-                <Outlet />
-            </main>
+                    {crumbs.map((crumb) => (
+                        <li
+                            className='group flex items-center text-tremor-content-emphasis hover:text-tremor-content-strong dark:text-dark-tremor-content-emphasis dark:hover:text-dark-tremor-content-strong'
+                            key={crumb.href}
+                        >
+                            {/* Yeah I CSS like that */}
+                            <ChevronRightIcon className='h-4 w-4 mx-1 text-slate-400' />
+                            <Link
+                                className='text-sm group-last:font-semibold group-last:text-tremor-content-strong group-last:truncate group-last:dark:text-dark-tremor-content-strong'
+                                to={crumb.href}
+                            >
+                                {crumb.label}
+                            </Link>
+                        </li>
+                    ))}
+                </ol>
+            </div>
+            <div className='grow py-6 bg-tremor-background-muted dark:bg-dark-tremor-background-muted'>
+                {/* Page Content */}
+                <main>
+                    <Outlet />
+                </main>
+            </div>
         </div>
     );
 };
