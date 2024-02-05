@@ -1,31 +1,21 @@
-import type { UseFormRegisterReturn } from 'react-hook-form';
+import { forwardRef } from 'react';
+import { TextInput, type TextInputProps } from '@tremor/react';
 
-import { Input, type InputProps } from '../ui';
+import { UseFormFieldProps, useFormField } from '@/hooks';
 
-import { FieldWrapper, type FieldPassThroughProps } from './FieldWrapper';
+import { FieldWrapper } from './FieldWrapper';
 
-export type InputFieldProps = {
-    registration: Partial<UseFormRegisterReturn>;
-} & FieldPassThroughProps &
-    InputProps;
+export type InputFieldProps = UseFormFieldProps & TextInputProps & { name: string };
 
-export const InputField = ({
-    className,
-    error,
-    label,
-    registration,
-    type,
-    ...props
-}: InputFieldProps) => {
-    return (
-        <FieldWrapper label={label} error={error}>
-            <Input
-                className={className}
-                type={type}
-                variant={error ? 'error' : 'default'}
-                {...registration}
-                {...props}
-            />
-        </FieldWrapper>
-    );
-};
+export const InputField = forwardRef<React.ElementRef<typeof TextInput>, InputFieldProps>(
+    (props, ref) => {
+        const { childProps, formFieldProps } = useFormField(props);
+
+        return (
+            <FieldWrapper {...formFieldProps}>
+                <TextInput ref={ref} {...childProps} />
+            </FieldWrapper>
+        );
+    },
+);
+InputField.displayName = 'InputField';

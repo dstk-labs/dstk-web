@@ -28,6 +28,8 @@ function ContentPlaceholder() {
     );
 }
 
+// TODO: Get User Info from Server
+
 export const Home = () => {
     return (
         <>

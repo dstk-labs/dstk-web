@@ -1,122 +1,77 @@
-import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
-import { useSetAtom } from 'jotai';
+import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@tremor/react';
 import type { NavigateFunction } from 'react-router-dom';
 
-import {
-    Button,
-    Card,
-    Divider,
-    Dropdown,
-    DropdownItem,
-    DropdownItems,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeaderCell,
-    TableRow,
-} from '@/components/ui';
+import { CircleIcon } from '@/components/icons';
 import type { MLModelList } from '@/types/MLModel';
 
-import { archiveModalOpenAtom, selectedModelAtom } from '../atoms';
+import { ModelRegistryActions } from './ModelRegistryActions';
+import { NoModelsFound } from './NoModelsFound';
+
+const HEADERS = ['Name', 'Total Versions', 'Status', 'Created By', 'Last Modified', 'Actions'];
 
 type ModelRegistryTableProps = {
-    data: MLModelList;
+    mlModelList: MLModelList;
     navigateFn: NavigateFunction;
 };
 
-export const ModelRegistryTable = ({ data, navigateFn }: ModelRegistryTableProps) => {
-    const setArchiveModalOpen = useSetAtom(archiveModalOpenAtom);
-    const setSelectedModel = useSetAtom(selectedModelAtom);
-
-    const handleEdit = (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-        model: (typeof data.listMLModels.edges)[number],
-    ) => {
-        e.stopPropagation();
-        navigateFn(`/dashboard/models/${model.node.modelId}/edit`);
-    };
-
-    const handleArchive = (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-        model: (typeof data.listMLModels.edges)[number],
-    ) => {
-        e.stopPropagation();
-        setSelectedModel({
-            modelId: model.node.modelId,
-            modelName: model.node.modelName,
-        });
-        setArchiveModalOpen(true);
-    };
-
+export const ModelRegistryTable = ({ mlModelList, navigateFn }: ModelRegistryTableProps) => {
     return (
-        <Card>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableHeaderCell>Name</TableHeaderCell>
-                        <TableHeaderCell>Total Versions</TableHeaderCell>
-                        <TableHeaderCell>Created By</TableHeaderCell>
-                        <TableHeaderCell>Last Modified</TableHeaderCell>
-                        <TableHeaderCell>
-                            <span className='sr-only'>Model Registry Actions</span>
-                        </TableHeaderCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {data.listMLModels.edges.map((model) => (
-                        <TableRow
-                            className='hover:bg-gray-50 hover:cursor-pointer'
-                            key={model.node.modelId}
-                            onClick={() => navigateFn(`/dashboard/models/${model.node.modelId}`)}
-                        >
-                            <TableCell className='font-medium text-gray-800'>
-                                {model.node.modelName}
-                            </TableCell>
-                            <TableCell>
-                                {(model.node.currentModelVersion &&
-                                    model.node.currentModelVersion.numericVersion) ||
-                                    0}
-                            </TableCell>
-                            <TableCell>
-                                <div className='flex gap-0.5 text-blue-600'>
-                                    <div>@</div>
-                                    <div className='hover:underline'>
-                                        {model.node.createdBy.userName}
-                                    </div>
-                                </div>
-                            </TableCell>
-                            <TableCell>
-                                {new Date(parseInt(model.node.dateModified)).toLocaleDateString()}
-                            </TableCell>
-                            <TableCell>
-                                <Dropdown
-                                    menuButton={
-                                        <Button
-                                            icon={EllipsisHorizontalIcon}
-                                            size='xs'
-                                            variant='ghost'
-                                        />
-                                    }
+        <div className='mt-6'>
+            {mlModelList.listMLModels.edges.length === 0 ? (
+                <NoModelsFound />
+            ) : (
+                <Table>
+                    <TableHead>
+                        <TableRow className='border-b border-tremor-border dark:border-dark-tremor-border'>
+                            {HEADERS.map((header) => (
+                                <TableHeaderCell
+                                    className='text-tremor-content-strong dark:text-dark-tremor-content-strong'
+                                    key={header}
                                 >
-                                    <DropdownItems>
-                                        <DropdownItem onClick={(e) => handleEdit(e, model)}>
-                                            Edit
-                                        </DropdownItem>
-                                        <DropdownItem onClick={(e) => handleArchive(e, model)}>
-                                            <span>Archive</span>
-                                        </DropdownItem>
-                                        <Divider />
-                                        <DropdownItem className='text-blue-600 font-medium'>
-                                            Publish
-                                        </DropdownItem>
-                                    </DropdownItems>
-                                </Dropdown>
-                            </TableCell>
+                                    {header}
+                                </TableHeaderCell>
+                            ))}
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </Card>
+                    </TableHead>
+                    <TableBody>
+                        {mlModelList.listMLModels.edges.map((edge) => (
+                            <TableRow
+                                className='hover:cursor-pointer hover:bg-tremor-background-muted hover:dark:bg-dark-tremor-background-muted'
+                                key={edge.node.modelId}
+                                onClick={() => navigateFn(`/dashboard/models/${edge.node.modelId}`)}
+                            >
+                                <TableCell className='font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                                    {edge.node.modelName}
+                                </TableCell>
+                                <TableCell>
+                                    {(edge.node.currentModelVersion &&
+                                        edge.node.currentModelVersion.numericVersion) ||
+                                        0}
+                                </TableCell>
+                                <TableCell>
+                                    <span className='inline-flex items-center gap-x-1.5 rounded-tremor-small bg-emerald-100 px-2 py-1 text-tremor-label font-medium text-emerald-800 ring-1 ring-inset ring-emerald-600/10 dark:bg-emerald-500/10 dark:text-emerald-500 dark:ring-emerald-500/20'>
+                                        <CircleIcon className='bg-emerald-500' />
+                                        Live
+                                    </span>
+                                </TableCell>
+                                <TableCell>{edge.node.createdBy.userName}</TableCell>
+                                <TableCell>
+                                    {new Date(
+                                        parseInt(edge.node.dateModified),
+                                    ).toLocaleDateString()}
+                                </TableCell>
+                                <TableCell>
+                                    <ModelRegistryActions
+                                        modelId={edge.node.modelId}
+                                        modelName={edge.node.modelName}
+                                        navigateFn={navigateFn}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )}
+        </div>
     );
 };

@@ -1,38 +1,16 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-    useForm,
-    type FieldValues,
-    type SubmitHandler,
-    type UseFormProps,
-    type UseFormReturn,
-} from 'react-hook-form';
-import { ZodType, ZodTypeDef } from 'zod';
+import { FieldValues, FormProvider, SubmitHandler, UseFormReturn } from 'react-hook-form';
 
-export type FormProps<TFormValues extends FieldValues, Schema> = {
-    children: (methods: UseFormReturn<TFormValues>) => React.ReactNode;
-    className?: string;
-    id?: string;
-    onSubmit: SubmitHandler<TFormValues>;
-    options?: UseFormProps<TFormValues>;
-    schema?: Schema;
+export type Props<T extends FieldValues> = Omit<React.ComponentProps<'form'>, 'onSubmit'> & {
+    form: UseFormReturn<T>;
+    onSubmit: SubmitHandler<T>;
 };
 
-export const Form = <
-    TFormValues extends Record<string, unknown> = Record<string, unknown>,
-    Schema extends ZodType<unknown, ZodTypeDef, unknown> = ZodType<unknown, ZodTypeDef, unknown>,
->({
-    children,
-    className,
-    id,
-    onSubmit,
-    options,
-    schema,
-}: FormProps<TFormValues, Schema>) => {
-    const methods = useForm<TFormValues>({ ...options, resolver: schema && zodResolver(schema) });
-
+export const Form = <T extends FieldValues>({ children, form, onSubmit, ...props }: Props<T>) => {
     return (
-        <form className={className} id={id} onSubmit={methods.handleSubmit(onSubmit)}>
-            {children(methods)}
-        </form>
+        <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} {...props}>
+                <fieldset disabled={form.formState.isSubmitting}>{children}</fieldset>
+            </form>
+        </FormProvider>
     );
 };

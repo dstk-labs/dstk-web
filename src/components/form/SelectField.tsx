@@ -1,43 +1,28 @@
-import type { UseFormRegisterReturn } from 'react-hook-form';
+import { Select, SelectItem, type SelectProps } from '@tremor/react';
 
-import { Select, type SelectProps } from '../ui';
+import { UseFormFieldProps, useFormField } from '@/hooks';
 
-import { FieldWrapper, type FieldPassThroughProps } from './FieldWrapper';
+import { FieldWrapper } from './FieldWrapper';
 
 type Option = {
-    id: string;
     label: string;
-    value: string | number;
+    id: string;
+    value: string;
 };
 
-export type SelectFieldProps = {
-    options: Option[];
-    registration: Partial<UseFormRegisterReturn>;
-} & FieldPassThroughProps &
-    SelectProps;
+export type SelectFieldProps = UseFormFieldProps &
+    SelectProps & { name: string; options: Option[] };
 
-export const SelectField = ({
-    className,
-    defaultValue,
-    error,
-    label,
-    options,
-    registration,
-    ...props
-}: SelectFieldProps) => {
+export const SelectField = (props: SelectFieldProps) => {
+    const { childProps, formFieldProps } = useFormField(props);
+
     return (
-        <FieldWrapper label={label} error={error}>
-            <Select
-                className={className}
-                defaultValue={defaultValue}
-                variant={error ? 'error' : 'primary'}
-                {...registration}
-                {...props}
-            >
-                {options.map((option) => (
-                    <option key={option.id} value={option.value.toString()}>
+        <FieldWrapper {...formFieldProps}>
+            <Select {...childProps}>
+                {props.options.map((option) => (
+                    <SelectItem key={option.id} value={option.value}>
                         {option.label}
-                    </option>
+                    </SelectItem>
                 ))}
             </Select>
         </FieldWrapper>

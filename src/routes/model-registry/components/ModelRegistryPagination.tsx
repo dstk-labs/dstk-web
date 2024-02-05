@@ -1,6 +1,7 @@
 import { useAtom } from 'jotai';
 
-import { Button } from '@/components/ui';
+import { Pagination } from '@/components/pagination';
+import type { Limit } from '@/types/Limit';
 
 import { modelRegistryPaginationAtom } from '../atoms';
 
@@ -23,22 +24,20 @@ export const ModelRegistryPagination = ({ continuationToken }: ModelRegistryPagi
             continuationTokens: [...values.continuationTokens, continuationToken],
         }));
 
+    const handleSelect = (value: string) =>
+        setInputs((values) => ({
+            ...values,
+            first: parseInt(value) as Limit,
+        }));
+
     return (
-        <div className='flex items-center justify-end gap-x-3'>
-            <Button
-                variant='secondary'
-                disabled={!inputs.hasPreviousPage}
-                onClick={() => handlePrevPage()}
-            >
-                Previous
-            </Button>
-            <Button
-                variant='secondary'
-                disabled={!inputs.hasNextPage}
-                onClick={() => handleNextPage()}
-            >
-                Next
-            </Button>
-        </div>
+        <Pagination
+            handlePrevPage={handlePrevPage}
+            handleNextPage={handleNextPage}
+            handleSelect={handleSelect}
+            hasPreviousPage={inputs.hasPreviousPage}
+            hasNextPage={inputs.hasNextPage}
+            limit={inputs.first}
+        />
     );
 };

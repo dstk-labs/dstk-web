@@ -1,30 +1,37 @@
-import { PlusCircleIcon } from '@heroicons/react/24/outline';
-import { type NavigateFunction } from 'react-router-dom';
+import { Button, Text, TextInput } from '@tremor/react';
+import { useSetAtom } from 'jotai';
 
-import { BreadcrumbItem, Breadcrumbs, Button } from '@/components/ui';
+import { DataView } from '@/components/data-view';
+import { VerticalDivider } from '@/components/vertical-divider';
 
-type ModelRegistryHeaderProps = {
-    navigateFn: NavigateFunction;
-};
+import { modelRegistryPaginationAtom } from '../atoms';
 
-export const ModelRegistryHeader = ({ navigateFn }: ModelRegistryHeaderProps) => {
+export const ModelRegistryHeader = () => {
+    const setInputs = useSetAtom(modelRegistryPaginationAtom);
+
+    const handleInput = (input: string) =>
+        setInputs((values) => ({
+            ...values,
+            modelName: input,
+        }));
+
     return (
-        <header className='flex flex-col gap-6'>
-            <div>
-                <Breadcrumbs>
-                    <BreadcrumbItem href='/dashboard/home'>Dashboard</BreadcrumbItem>
-                    <BreadcrumbItem href='/dashboard/models'>Models</BreadcrumbItem>
-                </Breadcrumbs>
+        <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-0'>
+            <Text className='text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                Model Registry
+            </Text>
+            <div className='flex flex-col gap-4 md:flex-row md:items-center'>
+                <div className='flex items-center gap-4'>
+                    <TextInput
+                        onChange={(e) => handleInput(e.target.value)}
+                        placeholder='Search Models'
+                    />
+                    <VerticalDivider className='hidden md:block' />
+                    <DataView />
+                </div>
+                <VerticalDivider className='hidden md:block' />
+                <Button>Add Model</Button>
             </div>
-            <div className='flex items-center justify-between gap-0'>
-                <h2 className='text-2xl font-medium text-gray-700 sm:text-3xl'>Model Registry</h2>
-                <Button
-                    onClick={() => navigateFn('/dashboard/models/create')}
-                    icon={PlusCircleIcon}
-                >
-                    Create
-                </Button>
-            </div>
-        </header>
+        </div>
     );
 };

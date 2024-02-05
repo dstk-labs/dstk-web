@@ -1,62 +1,86 @@
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { TextInput } from '@tremor/react';
+import { useAtom } from 'jotai';
+import { z } from 'zod';
 
+import { useZodForm } from '@/hooks';
 import {
-    Button,
-    Modal,
-    ModalBody,
-    ModalContents,
-    ModalFooter,
-    ModalIcon,
-    ModalTitle,
-} from '@/components/ui';
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogCancelButton,
+    AlertDialogClose,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogSubmitButton,
+    AlertDialogTitle,
+} from '@/components/alert-dialog';
+import { Form, InputField } from '@/components/form';
+import { Label } from '@/components/label';
 
-import { useArchiveModel } from '../api/archiveModel';
+import { archiveModalOpenAtom, selectedModelAtom } from '../atoms';
+import { useArchiveModel } from '../api';
 
-export type ArchiveModalProps = {
-    isOpen: boolean;
-    onClose: () => void;
-    model: {
-        modelId: string;
-        modelName: string;
-    };
-};
+export const ArchiveModal = () => {
+    const [archiveModalOpen, setArchiveModelOpen] = useAtom(archiveModalOpenAtom);
+    const [selectedModel, setSelectedModel] = useAtom(selectedModelAtom);
 
-export const ArchiveModal = ({ isOpen, onClose, model }: ArchiveModalProps) => {
     const [archiveModel, { loading }] = useArchiveModel();
 
-    const handleArchive = () => {
+    const schema = z
+        .object({ modelName: z.string() })
+        .refine((data) => data.modelName === selectedModel.modelName);
+
+    const form = useZodForm({ schema });
+
+    const { isDirty, isValid } = form.formState;
+
+    const handleClose = () => {
+        setArchiveModelOpen(false);
+        setSelectedModel({
+            modelId: '',
+            modelName: '',
+        });
+        form.reset();
+    };
+
+    const onSubmit = () => {
         archiveModel({
             variables: {
-                modelId: model.modelId,
+                modelId: selectedModel.modelId,
             },
-            onCompleted: onClose,
         });
+        setArchiveModelOpen(false);
+        form.reset();
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalContents>
-                <ModalIcon>
-                    <ExclamationTriangleIcon className='h-6 w-6 text-red-600' />
-                </ModalIcon>
-                <ModalBody>
-                    <ModalTitle>Archive {model.modelName}</ModalTitle>
-                    <div className='pt-2'>
-                        <p className='text-sm text-gray-500'>
-                            Are you sure you want to perform this action? Edits cannot be performed
-                            while a model is in an archived state.
-                        </p>
-                    </div>
-                </ModalBody>
-            </ModalContents>
-            <ModalFooter>
-                <Button onClick={() => handleArchive()} loading={loading} variant='destructive'>
+        <AlertDialog onClose={() => setArchiveModelOpen(false)} open={archiveModalOpen}>
+            <AlertDialogClose onClose={handleClose} />
+            <AlertDialogTitle>{selectedModel.modelName}</AlertDialogTitle>
+            <AlertDialogDescription>
+                Are you sure you want to perform this action? Edits can no longer be made to a model
+                once it is archived.
+            </AlertDialogDescription>
+            <AlertDialogBody>
+                <Label>Model name</Label>
+                <TextInput placeholder={selectedModel.modelName} className='mt-2' disabled />
+                <Form className='mt-4' form={form} id='archive-model' onSubmit={onSubmit}>
+                    <InputField
+                        label='Confirm Model Name'
+                        placeholder={selectedModel.modelName}
+                        {...form.register('modelName')}
+                    />
+                </Form>
+            </AlertDialogBody>
+            <AlertDialogFooter>
+                <AlertDialogCancelButton onClose={handleClose}>Cancel</AlertDialogCancelButton>
+                <AlertDialogSubmitButton
+                    disabled={!isDirty || !isValid}
+                    form='archive-model'
+                    loading={loading}
+                >
                     Archive
-                </Button>
-                <Button variant='secondary' onClick={onClose}>
-                    Cancel
-                </Button>
-            </ModalFooter>
-        </Modal>
+                </AlertDialogSubmitButton>
+            </AlertDialogFooter>
+        </AlertDialog>
     );
 };

@@ -1,24 +1,17 @@
-import type { UseFormRegisterReturn } from 'react-hook-form';
+import { Textarea, type TextareaProps } from '@tremor/react';
 
-import { TextArea, type TextAreaProps } from '../ui';
+import { UseFormFieldProps, useFormField } from '@/hooks';
 
-import { FieldWrapper, type FieldPassThroughProps } from './FieldWrapper';
+import { FieldWrapper } from './FieldWrapper';
 
-type TextAreaFieldProps = {
-    registration: Partial<UseFormRegisterReturn>;
-} & FieldPassThroughProps &
-    TextAreaProps;
+export type TextAreaFieldProps = UseFormFieldProps & TextareaProps & { name: string };
 
-export const TextAreaField = ({
-    className,
-    error,
-    label,
-    registration,
-    ...props
-}: TextAreaFieldProps) => {
+export const TextAreaField = (props: TextAreaFieldProps) => {
+    const { childProps, formFieldProps } = useFormField(props);
+
     return (
-        <FieldWrapper label={label} error={error}>
-            <TextArea className={className} {...registration} {...props} />
+        <FieldWrapper {...formFieldProps}>
+            <Textarea {...childProps} />
         </FieldWrapper>
     );
 };
