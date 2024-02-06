@@ -47,7 +47,7 @@ export const DashboardLayout = () => {
         .filter((match) => Boolean(match.handle))
         .map((match) => ({
             href: match.pathname,
-            label: match.handle.crumb(),
+            label: match.handle.crumb(match.data),
         }));
 
     const currentIndex = ROUTES.find((route) => route.to === activeSection.pathname)?.index;
@@ -114,7 +114,7 @@ export const DashboardLayout = () => {
                     </TabList>
                 </TabGroup>
                 {/* Breadcrumb Menu */}
-                <ol className='py-2 flex items-center text-sm leading-6 whitespace-nowrap min-w-0 px-4 border-b border-tremor-border dark:border-dark-tremor-border sm:px-6 lg:px-8'>
+                <ol className='py-2 flex items-center text-sm leading-6 whitespace-nowrap min-w-0 px-6 border-b border-tremor-border dark:border-dark-tremor-border sm:px-8 lg:px-10'>
                     <li className='text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis'>
                         Dashboard
                     </li>

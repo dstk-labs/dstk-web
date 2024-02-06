@@ -13,7 +13,12 @@ export const InputField = forwardRef<React.ElementRef<typeof TextInput>, InputFi
 
         return (
             <FieldWrapper {...formFieldProps}>
-                <TextInput ref={ref} {...childProps} />
+                <TextInput
+                    error={childProps.error}
+                    errorMessage={childProps.errorMessage}
+                    ref={ref}
+                    {...childProps}
+                />
             </FieldWrapper>
         );
     },

@@ -1,2 +1,3 @@
 export * from './EditModelForm';
-export * from './EditModelHeader';
+export * from './EditModelFormError';
+export * from './EditModelFormLoading';

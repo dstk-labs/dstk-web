@@ -1,6 +1,8 @@
-import { Select, SelectItem, type SelectProps } from '@tremor/react';
+import { forwardRef } from 'react';
+import { Select, SelectItem } from '@tremor/react';
+import { useController } from 'react-hook-form';
 
-import { UseFormFieldProps, useFormField } from '@/hooks';
+import { useFormField, type UseFormFieldProps } from '@/hooks';
 
 import { FieldWrapper } from './FieldWrapper';
 
@@ -11,20 +13,34 @@ type Option = {
 };
 
 export type SelectFieldProps = UseFormFieldProps &
-    SelectProps & { name: string; options: Option[] };
+    Omit<React.ComponentProps<typeof Select>, 'children'> & {
+        defaultValue?: string;
+        name: string;
+        options: Option[];
+    };
 
-export const SelectField = (props: SelectFieldProps) => {
-    const { childProps, formFieldProps } = useFormField(props);
+export const SelectField = forwardRef<React.ElementRef<typeof Select>, SelectFieldProps>(
+    (props, ref) => {
+        const { formFieldProps } = useFormField(props);
+        const { field, fieldState } = useController(props);
 
-    return (
-        <FieldWrapper {...formFieldProps}>
-            <Select {...childProps}>
-                {props.options.map((option) => (
-                    <SelectItem key={option.id} value={option.value}>
-                        {option.label}
-                    </SelectItem>
-                ))}
-            </Select>
-        </FieldWrapper>
-    );
-};
+        return (
+            <FieldWrapper {...formFieldProps}>
+                <Select
+                    defaultValue={props.defaultValue}
+                    error={fieldState.invalid}
+                    errorMessage={fieldState.error?.message}
+                    onValueChange={field.onChange}
+                    ref={ref}
+                >
+                    {props.options.map((option) => (
+                        <SelectItem key={option.id} value={option.value}>
+                            {option.label}
+                        </SelectItem>
+                    ))}
+                </Select>
+            </FieldWrapper>
+        );
+    },
+);
+SelectField.displayName = 'SelectField';

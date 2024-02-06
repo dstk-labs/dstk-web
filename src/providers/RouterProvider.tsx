@@ -1,7 +1,5 @@
 import { createBrowserRouter, RouterProvider as Router } from 'react-router-dom';
 
-import { PrivateRoute, PublicRoute } from '@/components/auth';
-import { DashboardLayout } from '@/components/layout';
 import {
     AddTeamMember,
     APIKeys,
@@ -20,6 +18,11 @@ import {
     UploadFiles,
     UserSettings,
 } from '@/routes';
+import { GET_MODEL } from '@/hooks';
+import { apolloClient } from '@/lib';
+import { PrivateRoute, PublicRoute } from '@/components/auth';
+import { DashboardLayout } from '@/components/layout';
+import { MLModel } from '@/types/MLModel';
 import type { MLModelVersion } from '@/types/MLModelVersion';
 import type { Team } from '@/types/Team';
 
@@ -74,9 +77,18 @@ export const RouterProvider = () => {
                                 },
                                 {
                                     path: '/dashboard/models/:modelId',
+                                    loader: async ({ params }) => {
+                                        const { data } = await apolloClient.query({
+                                            query: GET_MODEL,
+                                            variables: {
+                                                modelId: params.modelId,
+                                            },
+                                        });
+
+                                        return (data && data.getMLModel) || [];
+                                    },
                                     handle: {
-                                        crumb: (data?: MLModelVersion) =>
-                                            (data && data.modelId.modelId) || 'Async is fun',
+                                        crumb: (data: MLModel) => data.modelName,
                                     },
                                     children: [
                                         {

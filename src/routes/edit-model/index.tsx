@@ -1,41 +1,44 @@
-import { useLocation } from 'react-router-dom';
-import { BarLoader } from 'react-spinners';
+import { Card, Divider, Text } from '@tremor/react';
+import { useParams } from 'react-router-dom';
 
-import { useGetModel, useListStorageProviders } from '@/hooks';
-import { EditModelForm, EditModelHeader } from './components';
+import { useGetModel, useListStorageProviders, useListTeams } from '@/hooks';
+
+import { EditModelForm, EditModelFormError, EditModelFormLoading } from './components';
 
 export const EditModel = () => {
-    const { pathname } = useLocation();
-    const modelId = pathname.split('/')[pathname.split('/').length - 2];
+    const { modelId } = useParams();
 
-    const { data: model, loading: modelLoading, error: modelError } = useGetModel(modelId);
+    const { data: model, loading: modelLoading, error: modelError } = useGetModel(modelId || '');
+    const { data: teams, loading: teamsLoading, error: teamsError } = useListTeams();
     const {
         data: storageProviders,
         loading: storageProviderLoading,
         error: storageProviderError,
     } = useListStorageProviders();
 
-    if (storageProviderLoading || modelLoading) {
-        return <BarLoader color='#4f46e5' width='250px' />;
+    if (storageProviderLoading || modelLoading || teamsLoading) {
+        return <EditModelFormLoading />;
     }
 
-    if (storageProviderError) {
-        return <p>Failed to load Storage Providers.</p>;
+    if (storageProviderError || modelError || teamsError) {
+        return <EditModelFormError />;
     }
 
-    if (modelError) {
-        return <p>Failed to load Model information.</p>;
-    }
-
-    if (model && storageProviders) {
+    if (model && storageProviders && teams) {
         return (
-            <div className='w-full flex flex-col gap-8'>
-                <EditModelHeader model={model.getMLModel} />
-                <EditModelForm
-                    model={model.getMLModel}
-                    storageProviders={storageProviders.listStorageProviders}
-                />
+            <div className='px-4 sm:px-6 lg:px-8'>
+                <Card>
+                    <Text className='text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                        Edit {model.getMLModel.modelName}
+                    </Text>
+                    <Divider className='my-4' />
+                    <EditModelForm
+                        model={model.getMLModel}
+                        storageProviders={storageProviders.listStorageProviders}
+                        teams={teams.listTeams}
+                    />
+                </Card>
             </div>
         );
-    } else return null;
+    }
 };

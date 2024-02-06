@@ -1,5 +1,6 @@
 import { gql, useMutation, type TypedDocumentNode } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import type { EditMLModel } from '@/types/MLModel';
 
@@ -15,7 +16,10 @@ export const useEditModel = () => {
     const navigate = useNavigate();
 
     return useMutation(EDIT_MODEL, {
-        onCompleted: () => navigate('/dashboard/models'),
+        onCompleted: (data) => {
+            navigate(`/dashboard/models/${data.editModel.modelId}`);
+            toast.success(`Successfully updated ${data.editModel.modelName}`);
+        },
         refetchQueries: ['ListMLModels', 'GetMLModel'],
     });
 };
