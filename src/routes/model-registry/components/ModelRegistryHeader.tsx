@@ -1,12 +1,17 @@
 import { Button, Text, TextInput } from '@tremor/react';
 import { useSetAtom } from 'jotai';
+import type { NavigateFunction } from 'react-router-dom';
 
 import { DataView } from '@/components/data-view';
 import { VerticalDivider } from '@/components/vertical-divider';
 
 import { modelRegistryPaginationAtom } from '../atoms';
 
-export const ModelRegistryHeader = () => {
+type ModelRegistryHeaderProps = {
+    navigateFn: NavigateFunction;
+};
+
+export const ModelRegistryHeader = ({ navigateFn }: ModelRegistryHeaderProps) => {
     const setInputs = useSetAtom(modelRegistryPaginationAtom);
 
     const handleInput = (input: string) =>
@@ -30,7 +35,7 @@ export const ModelRegistryHeader = () => {
                     <DataView />
                 </div>
                 <VerticalDivider className='hidden md:block' />
-                <Button>Add Model</Button>
+                <Button onClick={() => navigateFn('/dashboard/models/create')}>Add Model</Button>
             </div>
         </div>
     );

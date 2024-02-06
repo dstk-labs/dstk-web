@@ -1,25 +1,38 @@
-import { BarLoader } from 'react-spinners';
+import { Card, Divider, Text } from '@tremor/react';
 
-import { useListStorageProviders } from '@/hooks';
+import { useListStorageProviders, useListTeams } from '@/hooks';
 
-import { CreateModelForm, CreateModelHeader } from './components';
+import { CreateModelForm, CreateModelFormError, CreateModelFormLoading } from './components';
 
 export const CreateModel = () => {
-    const { data, loading, error } = useListStorageProviders();
+    const {
+        data: storageProviders,
+        loading: storageProvidersLoading,
+        error: storageProvidersError,
+    } = useListStorageProviders();
+    const { data: teams, loading: teamsLoading, error: teamsError } = useListTeams();
 
-    if (loading) {
-        return <BarLoader color='#4f46e5' width='250px' />;
+    if (storageProvidersLoading || teamsLoading) {
+        return <CreateModelFormLoading />;
     }
 
-    if (error) {
-        return <p>Failed to load Storage Providers.</p>;
+    if (storageProvidersError || teamsError) {
+        return <CreateModelFormError />;
     }
 
-    if (data) {
+    if (storageProviders && teams) {
         return (
-            <div className='w-full flex flex-col gap-8'>
-                <CreateModelHeader />
-                <CreateModelForm storageProviders={data.listStorageProviders} />
+            <div className='px-4 sm:px-6 lg:px-8'>
+                <Card>
+                    <Text className='text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                        Create Model
+                    </Text>
+                    <Divider className='my-4' />
+                    <CreateModelForm
+                        storageProviders={storageProviders.listStorageProviders}
+                        teams={teams.listTeams}
+                    />
+                </Card>
             </div>
         );
     }

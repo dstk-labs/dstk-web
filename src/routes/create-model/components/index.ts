@@ -1,2 +1,3 @@
 export * from './CreateModelForm';
-export * from './CreateModelHeader';
+export * from './CreateModelFormError';
+export * from './CreateModelFormLoading';
