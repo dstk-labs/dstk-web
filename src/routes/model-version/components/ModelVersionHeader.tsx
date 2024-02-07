@@ -15,7 +15,7 @@ export const ModelVersionHeader = ({ navigateFn, modelId }: ModelRegistryHeaderP
             <Text className='text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
                 Model Registry
             </Text>
-            <div className='flex gap-4 items-center justify-between md:gap-0'>
+            <div className='flex items-center justify-between gap-4 md:justify-normal'>
                 <DataView />
                 <VerticalDivider className='hidden md:block' />
                 <Button onClick={() => navigateFn(`/dashboard/models/${modelId}/create`)}>
