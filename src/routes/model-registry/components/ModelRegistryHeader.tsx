@@ -32,7 +32,7 @@ export const ModelRegistryHeader = ({ navigateFn }: ModelRegistryHeaderProps) =>
                         placeholder='Search Models'
                     />
                     <VerticalDivider className='hidden md:block' />
-                    <DataView />
+                    <DataView className='-mr-3 w-[135px]' />
                 </div>
                 <VerticalDivider className='hidden md:block' />
                 <Button onClick={() => navigateFn('/dashboard/models/create')}>Add Model</Button>

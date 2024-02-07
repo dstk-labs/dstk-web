@@ -1,60 +1,77 @@
+import { Card, Divider, TabGroup, TabPanel, TabPanels } from '@tremor/react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { BarLoader } from 'react-spinners';
-
-import { useGetModel } from '@/hooks';
 
 import { useListModelVersions } from './api';
 import {
+    ModelRegistryCards,
+    ModelVersionCardsLoading,
+    ModelVersionError,
     ModelVersionHeader,
     ModelVersionPagination,
     ModelVersionTable,
-    NoModelVersionsFound,
+    ModelVersionTableLoading,
 } from './components';
 
 export const ModelVersion = () => {
-    const { modelId } = useParams();
     const navigate = useNavigate();
+    const { modelId } = useParams();
 
-    const {
-        data: modelData,
-        loading: modelLoading,
-        error: modelError,
-    } = useGetModel(modelId || '');
-    const {
-        data: mlVersionData,
-        loading: mlVersionLoading,
-        error: mlVersionError,
-    } = useListModelVersions(modelId || '');
+    const { data, loading, error } = useListModelVersions(modelId || '');
 
-    if (modelLoading || mlVersionLoading) {
-        return <BarLoader color='#2563eb' width='250px' />;
+    if (error) {
+        return <ModelVersionError />;
     }
 
-    if (modelError || mlVersionError) {
-        return <NoModelVersionsFound />;
-    }
+    const Models = () => {
+        if (loading || (data && data.listMLModelVersions)) {
+            return (
+                <TabPanels>
+                    <TabPanel>
+                        {loading ? (
+                            <ModelVersionCardsLoading />
+                        ) : (
+                            data && (
+                                <ModelRegistryCards
+                                    mlModelVersionList={data}
+                                    navigateFn={navigate}
+                                />
+                            )
+                        )}
+                    </TabPanel>
+                    <TabPanel>
+                        {loading ? (
+                            <ModelVersionTableLoading />
+                        ) : (
+                            data && (
+                                <ModelVersionTable
+                                    mlModelVersionList={data}
+                                    navigateFn={navigate}
+                                />
+                            )
+                        )}
+                    </TabPanel>
+                </TabPanels>
+            );
+        }
+    };
 
-    if (
-        modelData &&
-        modelData.getMLModel &&
-        mlVersionData &&
-        mlVersionData.listMLModelVersions &&
-        mlVersionData.listMLModelVersions.pageInfo
-    ) {
-        return (
-            <div className='w-full flex flex-col gap-12'>
-                <ModelVersionHeader mlModel={modelData.getMLModel} navigateFn={navigate} />
-                <div className='flex flex-col gap-6'>
-                    <ModelVersionTable mlModelVersions={mlVersionData} navigateFn={navigate} />
-                    <ModelVersionPagination
-                        continuationToken={
-                            mlVersionData.listMLModelVersions.pageInfo.continuationToken
-                        }
-                    />
+    return (
+        <div className='px-4 sm:px-6 lg:px-8'>
+            <Card>
+                <TabGroup>
+                    <ModelVersionHeader navigateFn={navigate} modelId={modelId || ''} />
+                    <Divider className='my-4' />
+                    <Models />
+                </TabGroup>
+                <div className='mt-4'>
+                    <Divider />
+                    {data && (
+                        <ModelVersionPagination
+                            continuationToken={data.listMLModelVersions.pageInfo.continuationToken}
+                        />
+                    )}
                 </div>
-            </div>
-        );
-    } else {
-        return null;
-    }
+            </Card>
+        </div>
+    );
 };

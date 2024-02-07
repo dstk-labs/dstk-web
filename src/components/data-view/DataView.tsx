@@ -1,6 +1,8 @@
 import { RiLayoutGridLine, RiListUnordered } from '@remixicon/react';
 import { Tab, TabList } from '@tremor/react';
 
+import { cn } from '@/lib';
+
 const TABS = [
     {
         icon: RiLayoutGridLine,
@@ -10,9 +12,15 @@ const TABS = [
     },
 ];
 
-export const DataView = () => {
+export type DataViewProps = Omit<React.ComponentProps<typeof TabList>, 'children'>;
+
+export const DataView = ({ className, ...props }: DataViewProps) => {
     return (
-        <TabList className='-mr-3 w-[135px] bg-transparent dark:bg-transparent' variant='solid'>
+        <TabList
+            className={cn('bg-transparent dark:bg-transparent', className)}
+            variant='solid'
+            {...props}
+        >
             {TABS.map((tab, index) => (
                 <Tab
                     className='flex h-8 items-center text-tremor-content-emphasis'

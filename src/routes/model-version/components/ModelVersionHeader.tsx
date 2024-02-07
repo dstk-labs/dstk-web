@@ -1,33 +1,27 @@
-import { BreadcrumbItem, Breadcrumbs, Button } from '@/components/ui';
+import { Button, Text } from '@tremor/react';
 import type { NavigateFunction } from 'react-router-dom';
 
-import type { MLModel } from '@/types/MLModel';
+import { DataView } from '@/components/data-view';
+import { VerticalDivider } from '@/components/vertical-divider';
 
-type ModelVersionHeaderProps = {
-    mlModel: MLModel;
+type ModelRegistryHeaderProps = {
+    modelId: string;
     navigateFn: NavigateFunction;
 };
 
-export const ModelVersionHeader = ({ mlModel, navigateFn }: ModelVersionHeaderProps) => {
-    const { modelId, modelName } = mlModel;
-
+export const ModelVersionHeader = ({ navigateFn, modelId }: ModelRegistryHeaderProps) => {
     return (
-        <header className='flex flex-col gap-4'>
-            <div>
-                <Breadcrumbs>
-                    <BreadcrumbItem href='/dashboard/home'>Dashboard</BreadcrumbItem>
-                    <BreadcrumbItem href='/dashboard/models'>Models</BreadcrumbItem>
-                    <BreadcrumbItem href={`/dashboard/models/${modelId}`}>
-                        {modelName}
-                    </BreadcrumbItem>
-                </Breadcrumbs>
-            </div>
-            <div className='flex items-center justify-between gap-0'>
-                <h2 className='text-2xl font-medium text-gray-700 sm:text-3xl'>{modelName}</h2>
+        <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-0'>
+            <Text className='text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                Model Registry
+            </Text>
+            <div className='flex gap-4 items-center justify-between md:gap-0'>
+                <DataView />
+                <VerticalDivider className='hidden md:block' />
                 <Button onClick={() => navigateFn(`/dashboard/models/${modelId}/create`)}>
-                    Create New Version
+                    Add Model Version
                 </Button>
             </div>
-        </header>
+        </div>
     );
 };

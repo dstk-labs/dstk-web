@@ -1,90 +1,64 @@
-import { useState } from 'react';
 import type { NavigateFunction } from 'react-router-dom';
 
-import {
-    Card,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeaderCell,
-    TableRow,
-    Tooltip,
-} from '@/components/ui';
 import type { MLModelVersionList } from '@/types/MLModelVersion';
-import { ClipboardIcon } from '@heroicons/react/24/outline';
+
+import { NoModelVersionsFound } from './NoModelVersionsFound';
+import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@tremor/react';
+import { ModelVersionCopyID } from './ModelVersionCopyID';
 
 type ModelVersionTableProps = {
-    mlModelVersions: MLModelVersionList;
+    mlModelVersionList: MLModelVersionList;
     navigateFn: NavigateFunction;
 };
 
-export const ModelVersionTable = ({ mlModelVersions, navigateFn }: ModelVersionTableProps) => {
-    const [isTooltipHidden, setIsTooltipHidden] = useState(true);
-    const [copiedVersionId, setCopiedVersionId] = useState('');
+const HEADERS = ['Version ID', 'Version', 'Created By', 'Date Created', 'Actions'];
 
-    const handleCopy = (modelVersion: string) => {
-        if (isTooltipHidden) {
-            setIsTooltipHidden(false);
-            setCopiedVersionId(modelVersion);
-
-            navigator.clipboard.writeText(modelVersion);
-
-            setTimeout(() => {
-                setIsTooltipHidden(true);
-                setCopiedVersionId('');
-            }, 750);
-        }
-    };
-
+export const ModelVersionTable = ({ mlModelVersionList, navigateFn }: ModelVersionTableProps) => {
     return (
-        <Card>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableHeaderCell>Version ID</TableHeaderCell>
-                        <TableHeaderCell>Version</TableHeaderCell>
-                        <TableHeaderCell>Created By</TableHeaderCell>
-                        <TableHeaderCell>Last Modified</TableHeaderCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {mlModelVersions.listMLModelVersions.edges.map((edge) => (
-                        <TableRow
-                            className='hover:bg-gray-50 hover:cursor-pointer'
-                            onClick={() =>
-                                navigateFn(
-                                    `/dashboard/models/${edge.node.modelId.modelId}/${edge.node.modelVersionId}`,
-                                )
-                            }
-                            key={edge.node.modelVersionId}
-                        >
-                            <TableCell>
-                                <Tooltip
-                                    isVisible={
-                                        !isTooltipHidden &&
-                                        edge.node.modelVersionId === copiedVersionId
-                                    }
-                                    message='Copied!'
+        <div className='mt-6'>
+            {mlModelVersionList.listMLModelVersions.edges.length === 0 ? (
+                <NoModelVersionsFound />
+            ) : (
+                <Table>
+                    <TableHead>
+                        <TableRow className='border-b border-tremor-border dark:border-dark-tremor-border'>
+                            {HEADERS.map((header) => (
+                                <TableHeaderCell
+                                    className='text-tremor-content-strong dark:text-dark-tremor-content-strong'
+                                    key={header}
                                 >
-                                    <div className='flex items-center gap-1 hover:text-gray-950'>
-                                        <div>{edge.node.modelVersionId.substring(0, 8)}...</div>
-                                        <ClipboardIcon
-                                            className='h-3 w-3 shrink-0 hover:text-gray-950 hover:cursor-pointer'
-                                            onClick={() => handleCopy(edge.node.modelVersionId)}
-                                        />
-                                    </div>
-                                </Tooltip>
-                            </TableCell>
-                            <TableCell>{edge.node.numericVersion}</TableCell>
-                            <TableCell>{edge.node.createdBy.userName}</TableCell>
-                            <TableCell>
-                                {new Date(parseInt(edge.node.dateCreated)).toLocaleDateString()}
-                            </TableCell>
+                                    {header}
+                                </TableHeaderCell>
+                            ))}
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </Card>
+                    </TableHead>
+                    <TableBody>
+                        {mlModelVersionList.listMLModelVersions.edges.map((edge) => (
+                            <TableRow
+                                className='hover:cursor-pointer hover:bg-tremor-background-muted hover:dark:bg-dark-tremor-background-muted'
+                                key={edge.node.modelVersionId}
+                                onClick={() =>
+                                    navigateFn(
+                                        `/dashboard/models/${edge.node.modelId.modelId}/${edge.node.modelVersionId}`,
+                                    )
+                                }
+                            >
+                                <TableCell className='font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                                    {edge.node.modelVersionId.substring(0, 8)}...
+                                </TableCell>
+                                <TableCell>{edge.node.numericVersion}</TableCell>
+                                <TableCell>{edge.node.createdBy.userName}</TableCell>
+                                <TableCell>
+                                    {new Date(parseInt(edge.node.dateCreated)).toLocaleDateString()}
+                                </TableCell>
+                                <TableCell>
+                                    <ModelVersionCopyID modelVersionID={edge.node.modelVersionId} />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )}
+        </div>
     );
 };
