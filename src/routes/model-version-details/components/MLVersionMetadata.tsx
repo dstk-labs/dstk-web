@@ -1,4 +1,4 @@
-import { Card, CardBody, Label } from '@/components/ui';
+import { List, ListItem } from '@tremor/react';
 
 import type { MLModelVersion } from '@/types/MLModelVersion';
 
@@ -7,44 +7,48 @@ type MLVersionMetadataProps = {
 };
 
 export const MLVersionMetadata = ({ mlModelVersion }: MLVersionMetadataProps) => {
-    const { createdBy, description, modelId, numericVersion } = mlModelVersion;
+    const { modelId, numericVersion } = mlModelVersion;
 
     return (
-        <Card>
-            <CardBody>
-                <div className='flex flex-col gap-4'>
-                    <h2 className='text-xl text-gray-700'>Model Metadata</h2>
-                    <div className='grid grid-cols-2 gap-4'>
-                        <div>
-                            <Label>Model Name</Label>
-                            <p className='text-gray-700'>{modelId.modelName}</p>
+        <div className='flex items-start gap-10'>
+            <List>
+                <ListItem className='py-4'>
+                    <div className='w-full'>
+                        <p className='font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                            Version Number
+                        </p>
+                        <div className='w-full md:w-4/12'>
+                            <p className='text-tremor-label text-tremor-content dark:text-dark-tremor-content'>
+                                Version {numericVersion}
+                            </p>
                         </div>
-                        <div>
-                            <Label>Version Number</Label>
-                            <p className='text-gray-700'>v{numericVersion}</p>
+                    </div>
+                </ListItem>
+                <ListItem className='py-4'>
+                    <div className='w-full'>
+                        <p className='font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                            Created By
+                        </p>
+                        <div className='w-full md:w-4/12'>
+                            <p className='text-tremor-label text-tremor-content dark:text-dark-tremor-content'>
+                                {mlModelVersion.createdBy.userName}
+                            </p>
                         </div>
-                        <div>
-                            <Label>Description</Label>
-                            <p className='text-gray-700'>{description}</p>
-                        </div>
-                        <div>
-                            <Label>Created By</Label>
-                            <div className='flex gap-0.5 text-blue-600'>
-                                <div>@</div>
-                                <div className='hover:underline hover:cursor-pointer'>
-                                    {createdBy.userName}
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <Label>Last Updated</Label>
-                            <p className='text-gray-700'>
+                    </div>
+                </ListItem>
+                <ListItem className='py-4'>
+                    <div className='w-full'>
+                        <p className='font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                            Last Updated
+                        </p>
+                        <div className='w-full md:w-4/12'>
+                            <p className='text-tremor-label text-tremor-content dark:text-dark-tremor-content'>
                                 {new Date(parseInt(modelId.dateModified)).toLocaleDateString()}
                             </p>
                         </div>
                     </div>
-                </div>
-            </CardBody>
-        </Card>
+                </ListItem>
+            </List>
+        </div>
     );
 };

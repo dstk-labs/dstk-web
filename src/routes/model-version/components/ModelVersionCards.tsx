@@ -8,14 +8,20 @@ import { ModelVersionCopyID } from './ModelVersionCopyID';
 
 type ModelRegistryCardsProps = {
     mlModelVersionList: MLModelVersionList;
+    modelId: string;
     navigateFn: NavigateFunction;
 };
 
-export const ModelRegistryCards = ({ mlModelVersionList, navigateFn }: ModelRegistryCardsProps) => {
+export const ModelRegistryCards = ({
+    mlModelVersionList,
+    modelId,
+    navigateFn,
+}: ModelRegistryCardsProps) => {
     return (
         <div className='mt-6'>
             {mlModelVersionList.listMLModelVersions.edges.length === 0 ? (
-                <NoModelVersionsFound />
+                // TODO: THIS IS JANK!
+                <NoModelVersionsFound navigateFn={navigateFn} modelId={modelId} />
             ) : (
                 <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
                     {mlModelVersionList.listMLModelVersions.edges.map((edge) => (

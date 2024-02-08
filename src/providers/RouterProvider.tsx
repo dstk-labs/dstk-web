@@ -25,6 +25,7 @@ import { DashboardLayout } from '@/components/layout';
 import { MLModel } from '@/types/MLModel';
 import type { MLModelVersion } from '@/types/MLModelVersion';
 import type { Team } from '@/types/Team';
+import { GET_MODEL_VERSION } from '@/routes/model-version-details/api';
 
 export const RouterProvider = () => {
     const router = createBrowserRouter([
@@ -111,10 +112,19 @@ export const RouterProvider = () => {
                                         },
                                         {
                                             path: '/dashboard/models/:modelId/:versionId',
+                                            loader: async ({ params }) => {
+                                                const { data } = await apolloClient.query({
+                                                    query: GET_MODEL_VERSION,
+                                                    variables: {
+                                                        modelVersionId: params.versionId,
+                                                    },
+                                                });
+
+                                                return (data && data.getMLModelVersion) || [];
+                                            },
                                             handle: {
-                                                crumb: (data?: MLModelVersion) =>
-                                                    (data && `v${data.numericVersion}`) ||
-                                                    'Async is super duper fun',
+                                                crumb: (data: MLModelVersion) =>
+                                                    `v${data.numericVersion}`,
                                             },
                                             children: [
                                                 {

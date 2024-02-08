@@ -1,37 +1,28 @@
-import { PlusCircleIcon } from '@heroicons/react/24/outline';
+import { Button, Text } from '@tremor/react';
 import { useNavigate } from 'react-router-dom';
 
-import { BreadcrumbItem, Breadcrumbs, Button } from '@/components/ui';
-import { MLModelVersion } from '@/types/MLModelVersion';
+import type { MLModelVersion } from '@/types/MLModelVersion';
 
 type ModelVersionDetailsHeaderProps = {
     mlModelVersion: MLModelVersion;
 };
 
 export const ModelVersionDetailsHeader = ({ mlModelVersion }: ModelVersionDetailsHeaderProps) => {
-    const { modelId, modelVersionId, numericVersion } = mlModelVersion;
     const navigate = useNavigate();
 
     return (
-        <header className='flex flex-col gap-6'>
-            <div>
-                <Breadcrumbs>
-                    <BreadcrumbItem href='/dashboard/home'>Dashboard</BreadcrumbItem>
-                    <BreadcrumbItem href='/dashboard/models'>Models</BreadcrumbItem>
-                    <BreadcrumbItem href={`/dashboard/models/${modelId.modelId}}`}>
-                        {modelId.modelName}
-                    </BreadcrumbItem>
-                    <BreadcrumbItem href={`/dashboard/models/${modelId.modelId}/${modelVersionId}`}>
-                        v{numericVersion}
-                    </BreadcrumbItem>
-                </Breadcrumbs>
+        <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-0'>
+            <div className='flex flex-col'>
+                <Text className='text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                    Model Metadata
+                </Text>
+                <div className='w-full md:max-w-7xl'>
+                    <p className='text-tremor-label text-tremor-content dark:text-dark-tremor-content'>
+                        {mlModelVersion.description}
+                    </p>
+                </div>
             </div>
-            <div className='flex items-center justify-between'>
-                <h2 className='text-2xl font-medium text-gray-700 sm:text-3xl'>Version Details</h2>
-                <Button onClick={() => navigate('/dashboard/models/create')} icon={PlusCircleIcon}>
-                    Add Files
-                </Button>
-            </div>
-        </header>
+            <Button onClick={() => navigate('/dashboard/models/create')}>Upload Files</Button>
+        </div>
     );
 };

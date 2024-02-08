@@ -8,16 +8,22 @@ import { ModelVersionCopyID } from './ModelVersionCopyID';
 
 type ModelVersionTableProps = {
     mlModelVersionList: MLModelVersionList;
+    modelId: string;
     navigateFn: NavigateFunction;
 };
 
 const HEADERS = ['Version ID', 'Version', 'Created By', 'Date Created', 'Actions'];
 
-export const ModelVersionTable = ({ mlModelVersionList, navigateFn }: ModelVersionTableProps) => {
+export const ModelVersionTable = ({
+    mlModelVersionList,
+    modelId,
+    navigateFn,
+}: ModelVersionTableProps) => {
     return (
         <div className='mt-6'>
             {mlModelVersionList.listMLModelVersions.edges.length === 0 ? (
-                <NoModelVersionsFound />
+                // TODO: THIS IS JANK!
+                <NoModelVersionsFound navigateFn={navigateFn} modelId={modelId} />
             ) : (
                 <Table>
                     <TableHead>

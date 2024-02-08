@@ -23,7 +23,7 @@ export const ModelVersion = () => {
     }
 
     const Models = () => {
-        if (loading || (data && data.listMLModelVersions)) {
+        if (loading || (data && data.listMLModelVersions && modelId)) {
             return (
                 <TabPanels>
                     <TabPanel>
@@ -34,6 +34,7 @@ export const ModelVersion = () => {
                                 <ModelRegistryCards
                                     mlModelVersionList={data}
                                     navigateFn={navigate}
+                                    modelId={modelId || ''}
                                 />
                             )
                         )}
@@ -45,6 +46,7 @@ export const ModelVersion = () => {
                             data && (
                                 <ModelVersionTable
                                     mlModelVersionList={data}
+                                    modelId={modelId || ''}
                                     navigateFn={navigate}
                                 />
                             )

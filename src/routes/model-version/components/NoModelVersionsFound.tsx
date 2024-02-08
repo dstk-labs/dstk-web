@@ -1,5 +1,6 @@
 import { RiAddFill, RiBarChartFill } from '@remixicon/react';
 import { Button } from '@tremor/react';
+import type { NavigateFunction } from 'react-router-dom';
 
 import {
     EmptyPlaceholder,
@@ -8,7 +9,12 @@ import {
     EmptyPlaceholderTitle,
 } from '@/components/empty-placeholder';
 
-export const NoModelVersionsFound = () => {
+type NoModelVersionsFoundProps = {
+    navigateFn: NavigateFunction;
+    modelId: string;
+};
+
+export const NoModelVersionsFound = ({ navigateFn, modelId }: NoModelVersionsFoundProps) => {
     return (
         <EmptyPlaceholder className='mt-4 h-52'>
             <EmptyPlaceholderContents>
@@ -19,7 +25,11 @@ export const NoModelVersionsFound = () => {
                 <EmptyPlaceholderContents>
                     Create your first version to get started.
                 </EmptyPlaceholderContents>
-                <Button className='mt-6' icon={RiAddFill}>
+                <Button
+                    className='mt-6'
+                    onClick={() => navigateFn(`/dashboard/models/${modelId}/create`)}
+                    icon={RiAddFill}
+                >
                     Create Model Version
                 </Button>
             </EmptyPlaceholderContents>

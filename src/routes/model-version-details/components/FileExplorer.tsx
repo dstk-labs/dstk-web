@@ -1,6 +1,4 @@
 import { DocumentIcon, FolderIcon } from '@heroicons/react/24/outline';
-import { useAtom } from 'jotai';
-
 import {
     Card,
     Table,
@@ -9,11 +7,15 @@ import {
     TableHead,
     TableHeaderCell,
     TableRow,
-} from '@/components/ui';
+} from '@tremor/react';
+import { useAtom } from 'jotai';
+
 import type { StorageProviderObjectList } from '@/types/StorageProvider';
 
 import { listObjectsPaginationAtom } from '../atoms';
 import { createDirectory } from '../lib';
+
+const HEADERS = ['Type', 'Name', 'Size (kb)', 'Last Modified'];
 
 type FileExplorerProps = {
     objects: StorageProviderObjectList;
@@ -27,11 +29,15 @@ export const FileExplorer = ({ objects }: FileExplorerProps) => {
         <Card>
             <Table>
                 <TableHead>
-                    <TableRow>
-                        <TableHeaderCell>Type</TableHeaderCell>
-                        <TableHeaderCell>Name</TableHeaderCell>
-                        <TableHeaderCell>Size (kb)</TableHeaderCell>
-                        <TableHeaderCell>Last Modified</TableHeaderCell>
+                    <TableRow className='border-b border-tremor-border dark:border-dark-tremor-border'>
+                        {HEADERS.map((header) => (
+                            <TableHeaderCell
+                                className='text-tremor-content-strong dark:text-dark-tremor-content-strong'
+                                key={header}
+                            >
+                                {header}
+                            </TableHeaderCell>
+                        ))}
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -50,8 +56,8 @@ export const FileExplorer = ({ objects }: FileExplorerProps) => {
                                     <FolderIcon className='w-5 h-5' />
                                 </TableCell>
                                 <TableCell>..</TableCell>
-                                <TableCell> </TableCell>
-                                <TableCell> </TableCell>
+                                <TableCell />
+                                <TableCell />
                             </TableRow>
                         ) : null}
                         {files.directories.map((directory) => (
