@@ -1,8 +1,8 @@
-import { ArrowPathIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
+import { Card } from '@tremor/react';
 import { type NavigateFunction } from 'react-router-dom';
 
-import { Card, CardBody, CardHeader } from '@/components/ui';
 import { Team } from '@/types/Team';
+import { RiArrowRightUpLine } from '@remixicon/react';
 
 type TeamCardsProps = {
     navigateFn: NavigateFunction;
@@ -11,37 +11,47 @@ type TeamCardsProps = {
 
 export const TeamCards = ({ navigateFn, teams }: TeamCardsProps) => {
     return (
-        <div className='flex flex-col gap-4'>
+        <div className='mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
             {teams.map((team) => (
                 <Card
+                    className='group p-4 hover:cursor-pointer'
                     key={team.teamId}
-                    className='hover:bg-gray-50 hover:cursor-pointer'
-                    onClick={() => navigateFn(`/teams/${team.teamId}`)}
+                    onClick={() => navigateFn(`/dashboard/teams/${team.teamId}`)}
                 >
-                    <CardHeader>
-                        <div className='flex flex-col gap-1.5'>
-                            <h2 className='text-xl font-medium'>{team.name}</h2>
-                            <p className='text-sm text-gray-500'>{team.description}</p>
+                    <div className='flex items-center space-x-4'>
+                        <div className='truncate'>
+                            <p className='truncate text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                                {team.name}
+                            </p>
+                            <p className='truncate text-tremor-default text-tremor-content dark:text-dark-tremor-content'>
+                                {team.description}
+                            </p>
                         </div>
-                    </CardHeader>
-                    <CardBody>
-                        <div className='flex flex-col gap-2'>
-                            <div className='flex items-center gap-2 text-sm text-gray-500'>
-                                <CalendarDaysIcon className='h-4 w-4' />
-                                <p>
-                                    Created:{' '}
-                                    {new Date(parseInt(team.dateCreated)).toLocaleDateString()}
-                                </p>
-                            </div>
-                            <div className='flex items-center gap-2 text-sm text-gray-500'>
-                                <ArrowPathIcon className='h-4 w-4' />
-                                <p>
-                                    Last Modified:{' '}
-                                    {new Date(parseInt(team.dateModified)).toLocaleDateString()}
-                                </p>
-                            </div>
+                    </div>
+                    <div className='mt-6 grid grid-cols-2 divide-x divide-tremor-border border-t border-tremor-border dark:divide-dark-tremor-border dark:border-dark-tremor-border'>
+                        <div className='truncate px-3 py-2'>
+                            <p className='truncate text-tremor-label text-tremor-content dark:text-dark-tremor-content'>
+                                Owner
+                            </p>
+                            <p className='truncate text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                                {team.createdBy.userName}
+                            </p>
                         </div>
-                    </CardBody>
+                        <div className='truncate px-3 py-2'>
+                            <p className='truncate text-tremor-label text-tremor-content dark:text-dark-tremor-content'>
+                                Last Modified
+                            </p>
+                            <p className='truncate text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                                {new Date(parseInt(team.dateModified)).toLocaleDateString()}
+                            </p>
+                        </div>
+                    </div>
+                    <span
+                        className='pointer-events-none absolute right-4 top-4 text-tremor-content-subtle group-hover:text-tremor-content dark:text-dark-tremor-content-subtle group-hover:dark:text-dark-tremor-content'
+                        aria-hidden={true}
+                    >
+                        <RiArrowRightUpLine className='h-4 w-4' aria-hidden={true} />
+                    </span>
                 </Card>
             ))}
         </div>

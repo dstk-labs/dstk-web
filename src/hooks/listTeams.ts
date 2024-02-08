@@ -5,6 +5,9 @@ import type { TeamList } from '@/types/Team';
 const LIST_TEAMS: TypedDocumentNode<TeamList> = gql`
     query ListTeams($teamId: String) {
         listTeams(teamId: $teamId) {
+            createdBy {
+                userName
+            }
             description
             name
             teamId
