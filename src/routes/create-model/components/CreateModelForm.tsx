@@ -3,7 +3,7 @@ import { Button, Select, SelectItem, TextInput, Textarea } from '@tremor/react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { useListProjects, useZodForm } from '@/hooks';
+import { useLazyListProjects, useZodForm } from '@/hooks';
 import { FieldWrapper, Form } from '@/components/form';
 import { Skeleton } from '@/components/skeleton';
 import type { StorageProvider } from '@/types/StorageProvider';
@@ -30,7 +30,8 @@ export const CreateModelForm = ({ storageProviders, teams }: EditModelFormProps)
     const navigate = useNavigate();
 
     const [editModel, { loading: createModelLoading }] = useCreateModel();
-    const [listProjects, { called, data: projects, loading: projectsLoading }] = useListProjects();
+    const [listProjects, { called, data: projects, loading: projectsLoading }] =
+        useLazyListProjects();
 
     const form = useZodForm({
         schema,

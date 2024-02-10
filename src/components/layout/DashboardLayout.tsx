@@ -115,16 +115,13 @@ export const DashboardLayout = () => {
                 </TabGroup>
                 {/* Breadcrumb Menu */}
                 <ol className='py-2 flex items-center text-sm leading-6 whitespace-nowrap min-w-0 px-6 border-b border-tremor-border dark:border-dark-tremor-border sm:px-8 lg:px-10'>
-                    <li className='text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis'>
-                        Dashboard
-                    </li>
                     {crumbs.map((crumb) => (
                         <li
                             className='group flex items-center text-tremor-content-emphasis hover:text-tremor-content-strong dark:text-dark-tremor-content-emphasis dark:hover:text-dark-tremor-content-strong'
                             key={crumb.href}
                         >
                             {/* Yeah I CSS like that */}
-                            <ChevronRightIcon className='h-4 w-4 mx-1 text-slate-400' />
+                            <ChevronRightIcon className='h-4 w-4 mx-1 text-slate-400 group-first:hidden' />
                             <Link
                                 className='text-sm group-last:font-semibold group-last:text-tremor-content-strong group-last:truncate group-last:dark:text-dark-tremor-content-strong'
                                 to={crumb.href}

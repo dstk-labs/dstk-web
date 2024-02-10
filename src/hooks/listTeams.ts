@@ -2,7 +2,7 @@ import { gql, useQuery, type TypedDocumentNode } from '@apollo/client';
 
 import type { TeamList } from '@/types/Team';
 
-const LIST_TEAMS: TypedDocumentNode<TeamList> = gql`
+export const LIST_TEAMS: TypedDocumentNode<TeamList> = gql`
     query ListTeams($teamId: String) {
         listTeams(teamId: $teamId) {
             createdBy {

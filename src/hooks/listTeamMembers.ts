@@ -7,6 +7,7 @@ const LIST_TEAM_MEMBERS: TypedDocumentNode<ListTeamMembers> = gql`
         listTeamMembers(teamId: $teamId) {
             isAdmin
             primaryEmail
+            realName
             userName
             userId
         }

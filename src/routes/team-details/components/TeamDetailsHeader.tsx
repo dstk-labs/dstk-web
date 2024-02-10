@@ -1,31 +1,28 @@
-import { useNavigate } from 'react-router-dom';
+import type { Team } from '@/types/Team';
 
-import { BreadcrumbItem, Breadcrumbs, Button } from '@/components/ui';
-import { Team } from '@/types/Team';
-
-type TeamDetailsHeaderProps = {
+type TeamDetailHeaderProps = {
     team: Team;
 };
 
-export const TeamDetailsHeader = ({ team }: TeamDetailsHeaderProps) => {
-    const navigate = useNavigate();
-    const { name, teamId } = team;
-
+export const TeamDetailsHeader = ({ team }: TeamDetailHeaderProps) => {
     return (
-        <header className='flex flex-col gap-6'>
-            <div>
-                <Breadcrumbs>
-                    <BreadcrumbItem href='/dashboard/home'>Dashboard</BreadcrumbItem>
-                    <BreadcrumbItem href='/teams'>Teams</BreadcrumbItem>
-                    <BreadcrumbItem href={`/teams/${teamId}`}>{name}</BreadcrumbItem>
-                </Breadcrumbs>
+        <div className='flex flex-col gap-8'>
+            <div className='flex flex-col gap-2'>
+                <h3 className='text-tremor-title font-bold text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                    {team.name}
+                </h3>
+                <p className='text-tremor-default leading-6 text-tremor-content dark:text-dark-tremor-content'>
+                    {team.description}
+                </p>
             </div>
-            <div className='flex items-center justify-between gap-0'>
-                <h2 className='text-2xl font-medium text-gray-700 sm:text-3xl'>{name}</h2>
-                <Button onClick={() => navigate(`/teams/${teamId}/add-member`)}>
-                    Add Team Member
-                </Button>
+            <div className='flex flex-col gap-2'>
+                <h4 className='font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                    Add new team members
+                </h4>
+                <p className='text-tremor-default leading-6 text-tremor-content dark:text-dark-tremor-content'>
+                    Team owners can add, manage, and remove members.
+                </p>
             </div>
-        </header>
+        </div>
     );
 };

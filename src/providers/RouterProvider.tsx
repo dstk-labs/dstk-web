@@ -18,7 +18,7 @@ import {
     UploadFiles,
     UserSettings,
 } from '@/routes';
-import { GET_MODEL } from '@/hooks';
+import { GET_MODEL, LIST_TEAMS } from '@/hooks';
 import { apolloClient } from '@/lib';
 import { PrivateRoute, PublicRoute } from '@/components/auth';
 import { DashboardLayout } from '@/components/layout';
@@ -145,7 +145,7 @@ export const RouterProvider = () => {
                             ],
                         },
                         {
-                            path: 'dashboard/teams',
+                            path: '/dashboard/teams',
                             handle: {
                                 crumb: () => 'Teams',
                             },
@@ -155,17 +155,27 @@ export const RouterProvider = () => {
                                     index: true,
                                 },
                                 {
-                                    path: 'dashboard/teams/create',
+                                    path: '/dashboard/teams/create',
                                     element: <CreateTeam />,
                                     handle: {
                                         crumb: () => 'Create',
                                     },
                                 },
                                 {
-                                    path: 'dashboard/teams/:teamId',
+                                    path: '/dashboard/teams/:teamId',
+                                    id: 'team-details',
+                                    loader: async ({ params }) => {
+                                        const { data } = await apolloClient.query({
+                                            query: LIST_TEAMS,
+                                            variables: {
+                                                teamId: params.teamId,
+                                            },
+                                        });
+
+                                        return (data && data.listTeams[0]) || [];
+                                    },
                                     handle: {
-                                        crumb: (data?: Team) =>
-                                            (data && data.name) || 'BILLIE JEAN',
+                                        crumb: (data: Team) => data.name,
                                     },
                                     children: [
                                         {
@@ -173,7 +183,7 @@ export const RouterProvider = () => {
                                             index: true,
                                         },
                                         {
-                                            path: 'dashboard/teams/:teamId/add-member',
+                                            path: '/dashboard/teams/:teamId/add-member',
                                             element: <AddTeamMember />,
                                             handle: {
                                                 crumb: () => 'Add Team Member',
@@ -184,7 +194,7 @@ export const RouterProvider = () => {
                             ],
                         },
                         {
-                            path: 'dashboard/settings',
+                            path: '/dashboard/settings',
                             handle: {
                                 crumb: () => 'Settings',
                             },
@@ -194,7 +204,7 @@ export const RouterProvider = () => {
                                     index: true,
                                 },
                                 {
-                                    path: 'dashboard/settings/api-keys',
+                                    path: '/dashboard/settings/api-keys',
                                     element: <APIKeys />,
                                     handle: {
                                         crumb: () => 'API Keys',

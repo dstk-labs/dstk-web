@@ -1,77 +1,105 @@
+import { Button, Card, TextInput } from '@tremor/react';
+import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
-import { useLogin } from '@/hooks';
-import { Form, InputField } from '@/components/form';
-import { Button } from '@/components/ui';
+import { useLogin, useZodForm } from '@/hooks';
+import { FieldWrapper, Form } from '@/components/form';
+import { Logo } from '@/components/logo';
 
-const loginInputSchema = z.object({
+const schema = z.object({
     password: z.string().min(1, 'Password is required.'),
-    userName: z.string().min(1, 'Username is required.'),
+    userName: z.string().min(1, 'User name is required.'),
 });
-
-type LoginInput = z.infer<typeof loginInputSchema>;
 
 export const Login = () => {
     const [login, { loading }] = useLogin();
 
-    const onSubmit = (data: LoginInput) => {
+    const form = useZodForm({ schema });
+
+    const onSubmit = () => {
+        const { password, userName } = form.getValues();
+
         login({
             variables: {
                 data: {
-                    password: data.password,
-                    userName: data.userName,
+                    password: password,
+                    userName: userName,
                 },
             },
         });
     };
 
     return (
-        <section>
-            <div className='container flex items-center justify-center min-h-screen px-6 mx-auto'>
-                <div className='w-full max-w-md flex flex-col gap-8'>
-                    <h1 className='text-2xl font-semibold text-gray-800 sm:text-3xl'>Sign In</h1>
-
-                    <Form<LoginInput, typeof loginInputSchema>
-                        id='login'
-                        onSubmit={onSubmit}
-                        schema={loginInputSchema}
-                    >
-                        {({ register, formState }) => (
-                            <div className='flex flex-col gap-4'>
-                                <InputField
-                                    error={formState.errors.userName}
-                                    placeholder='Username'
-                                    registration={register('userName')}
-                                    type='text'
-                                />
-                                <InputField
-                                    error={formState.errors.password}
-                                    placeholder='Password'
-                                    registration={register('password')}
-                                    type='password'
-                                />
-                            </div>
-                        )}
-                    </Form>
-
-                    <a
-                        className='-mt-4 text-sm text-blue-600 hover:underline'
-                        href='/reset-password'
-                    >
-                        Forgot password?
-                    </a>
-
-                    <div className='flex flex-col gap-6'>
-                        <Button form='login' loading={loading} type='submit'>
-                            Sign In
-                        </Button>
-
-                        <a href='/register' className='text-sm text-blue-600 hover:underline'>
-                            Need to create an account? Click Here.
-                        </a>
+        <>
+            <div className='flex min-h-full flex-1 flex-col gap-6 items-center px-4 py-10 lg:px-6'>
+                <div className='flex flex-col gap-6 items-center'>
+                    <Logo className='h-10 w-10' />
+                    <div className='flex flex-col items-center max-w-md'>
+                        <h3 className='text-tremor-title font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                            Welcome Back
+                        </h3>
+                        <p className='text-tremor-default text-tremor-content dark:text-dark-tremor-content'>
+                            Enter your credentials to access your account.
+                        </p>
                     </div>
                 </div>
+                <Card className='mt-2 sm:max-w-md'>
+                    <Form
+                        className='flex flex-col gap-8'
+                        form={form}
+                        id='login'
+                        onSubmit={onSubmit}
+                    >
+                        <div className='flex flex-col gap-4'>
+                            <FieldWrapper label='User Name'>
+                                <TextInput
+                                    autoComplete='user-name'
+                                    error={Boolean(form.formState.errors.userName)}
+                                    errorMessage={form.formState.errors.userName?.message}
+                                    placeholder=''
+                                    {...form.register('userName')}
+                                />
+                            </FieldWrapper>
+                            <FieldWrapper label='Password'>
+                                <TextInput
+                                    autoComplete='password'
+                                    error={Boolean(form.formState.errors.password)}
+                                    errorMessage={form.formState.errors.password?.message}
+                                    placeholder='********'
+                                    type='password'
+                                    {...form.register('password')}
+                                />
+                            </FieldWrapper>
+                        </div>
+                        <Button
+                            disabled={!form.formState.isValid}
+                            form='login'
+                            loading={loading}
+                            type='submit'
+                        >
+                            Log in
+                        </Button>
+                        <p className='text-center text-tremor-label text-tremor-content dark:text-dark-tremor-content'>
+                            Forgot your password?{' '}
+                            <Link
+                                className='text-tremor-brand hover:text-tremor-brand-emphasis dark:text-dark-tremor-brand hover:dark:text-dark-tremor-brand-emphasis'
+                                to='/'
+                            >
+                                Reset password
+                            </Link>
+                        </p>
+                    </Form>
+                </Card>
+                <p className='text-tremor-default text-tremor-content dark:text-dark-tremor-content'>
+                    Need to make an account?{' '}
+                    <Link
+                        className='font-medium text-tremor-brand hover:text-tremor-brand-emphasis dark:text-dark-tremor-brand hover:dark:text-dark-tremor-brand-emphasis'
+                        to='/register'
+                    >
+                        Register Here
+                    </Link>
+                </p>
             </div>
-        </section>
+        </>
     );
 };

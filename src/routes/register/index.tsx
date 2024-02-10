@@ -1,109 +1,148 @@
-import { toast } from 'sonner';
+import { Button, Card, TextInput } from '@tremor/react';
+import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
-import { useLogin } from '@/hooks';
-import { Form, InputField } from '@/components/form';
-import { Button } from '@/components/ui';
+import { useZodForm } from '@/hooks';
+import { FieldWrapper, Form } from '@/components/form';
+import { Logo } from '@/components/logo';
 
-import { useCreateAccount } from './api/createAccount';
+import { useCreateAccount } from './api';
 
-const createAccountSchema = z.object({
-    email: z.string().email().min(1, 'Email is required'),
-    password: z.string().min(1, 'Password is required'),
-    realName: z.string().min(1, 'Name is required'),
-    userName: z.string().min(1, 'Username is required'),
-});
-
-type CreateAccountInput = z.infer<typeof createAccountSchema>;
+const schema = z
+    .object({
+        confirmPassword: z.string().min(1, 'Please confirm your password'),
+        email: z.string().email('Email is required.'),
+        password: z.string().min(1, 'Password is required.'),
+        name: z.string().min(1, 'Name is required'),
+        userName: z.string().min(1, 'User name is required.'),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: 'Passwords must match.',
+    });
 
 export const Register = () => {
-    const [createAccount, { loading: createAccountLoading }] = useCreateAccount();
-    const [login, { loading: loginLoading }] = useLogin();
+    const [createAccount, { loading }] = useCreateAccount();
 
-    const onSubmit = (data: CreateAccountInput) => {
+    const form = useZodForm({ schema });
+
+    const onSubmit = () => {
+        const { email, password, name, userName } = form.getValues();
+
         createAccount({
             variables: {
                 data: {
-                    email: data.email,
-                    password: data.password,
-                    realName: data.realName,
-                    userName: data.userName,
+                    email: email,
+                    password: password,
+                    realName: name,
+                    userName: userName,
                 },
-            },
-            onCompleted: () => {
-                login({
-                    variables: {
-                        data: {
-                            userName: data.userName,
-                            password: data.password,
-                        },
-                    },
-                });
-                toast.success('Successfully created account!', {
-                    description: 'A verification code has been sent to your email.',
-                });
             },
         });
     };
 
     return (
-        <section>
-            <div className='container flex items-center justify-center min-h-screen px-6 mx-auto'>
-                <div className='w-full max-w-md flex flex-col gap-8'>
-                    <h1 className='text-2xl font-semibold text-gray-800 sm:text-3xl'>
-                        Create an Account
-                    </h1>
-
-                    <Form<CreateAccountInput, typeof createAccountSchema>
+        <>
+            <div className='flex min-h-full flex-1 flex-col gap-6 items-center px-4 py-10 lg:px-6'>
+                <div className='flex flex-col gap-6 items-center'>
+                    <Logo className='h-10 w-10' />
+                    <div className='max-w-md'>
+                        <h3 className='text-tremor-title font-bold text-tremor-content-strong dark:text-dark-tremor-content-strong'>
+                            Create New Account
+                        </h3>
+                    </div>
+                </div>
+                <Card className='mt-2 sm:max-w-md'>
+                    <Form
+                        className='flex flex-col gap-8'
+                        form={form}
                         id='create-account'
                         onSubmit={onSubmit}
-                        schema={createAccountSchema}
                     >
-                        {({ register, formState }) => (
-                            <div className='flex flex-col gap-4'>
-                                <InputField
-                                    error={formState.errors.realName}
-                                    placeholder='Name'
-                                    registration={register('realName')}
-                                    type='text'
+                        <div className='flex flex-col gap-4'>
+                            <FieldWrapper label='Name'>
+                                <TextInput
+                                    autoComplete='name'
+                                    error={Boolean(form.formState.errors.name)}
+                                    errorMessage={form.formState.errors.name?.message}
+                                    placeholder=''
+                                    {...form.register('name')}
                                 />
-                                <InputField
-                                    error={formState.errors.userName}
-                                    placeholder='Username'
-                                    registration={register('userName')}
-                                    type='text'
+                            </FieldWrapper>
+                            <FieldWrapper label='User Name'>
+                                <TextInput
+                                    autoComplete='user-name'
+                                    error={Boolean(form.formState.errors.userName)}
+                                    errorMessage={form.formState.errors.userName?.message}
+                                    placeholder=''
+                                    {...form.register('userName')}
                                 />
-                                <InputField
-                                    error={formState.errors.email}
-                                    placeholder='Email'
-                                    registration={register('email')}
+                            </FieldWrapper>
+                            <FieldWrapper label='Email'>
+                                <TextInput
+                                    autoComplete='email'
+                                    error={Boolean(form.formState.errors.email)}
+                                    errorMessage={form.formState.errors.email?.message}
+                                    placeholder=''
                                     type='email'
+                                    {...form.register('email')}
                                 />
-                                <InputField
-                                    error={formState.errors.password}
-                                    placeholder='Password'
-                                    registration={register('password')}
+                            </FieldWrapper>
+                            <FieldWrapper label='Password'>
+                                <TextInput
+                                    autoComplete='password'
+                                    error={Boolean(form.formState.errors.password)}
+                                    errorMessage={form.formState.errors.password?.message}
+                                    placeholder='********'
                                     type='password'
+                                    {...form.register('password')}
                                 />
-                            </div>
-                        )}
-                    </Form>
-
-                    <div className='flex flex-col gap-6'>
+                            </FieldWrapper>
+                            <FieldWrapper label='Confirm Password'>
+                                <TextInput
+                                    error={Boolean(form.formState.errors.confirmPassword)}
+                                    errorMessage={form.formState.errors.confirmPassword?.message}
+                                    placeholder='********'
+                                    type='password'
+                                    {...form.register('confirmPassword')}
+                                />
+                            </FieldWrapper>
+                        </div>
                         <Button
+                            disabled={!form.formState.isValid}
                             form='create-account'
-                            loading={createAccountLoading || loginLoading}
+                            loading={loading}
                             type='submit'
                         >
                             Create Account
                         </Button>
-
-                        <a href='/login' className='text-sm text-blue-600 hover:underline'>
-                            Already have an account? Sign in here.
-                        </a>
-                    </div>
-                </div>
+                        <p className='text-center text-tremor-label text-tremor-content dark:text-dark-tremor-content'>
+                            By signing in, you agree to our{' '}
+                            <Link
+                                className='capitalize text-tremor-brand hover:text-tremor-brand-emphasis dark:text-dark-tremor-brand hover:dark:text-dark-tremor-brand-emphasis'
+                                to='/'
+                            >
+                                Terms of use
+                            </Link>{' '}
+                            and{' '}
+                            <Link
+                                className='capitalize text-tremor-brand hover:text-tremor-brand-emphasis dark:text-dark-tremor-brand hover:dark:text-dark-tremor-brand-emphasis'
+                                to='/'
+                            >
+                                Privacy policy
+                            </Link>
+                        </p>
+                    </Form>
+                </Card>
+                <p className='text-tremor-default text-tremor-content dark:text-dark-tremor-content'>
+                    Already have an account?{' '}
+                    <Link
+                        className='font-medium text-tremor-brand hover:text-tremor-brand-emphasis dark:text-dark-tremor-brand hover:dark:text-dark-tremor-brand-emphasis'
+                        to='/login'
+                    >
+                        Sign in
+                    </Link>
+                </p>
             </div>
-        </section>
+        </>
     );
 };

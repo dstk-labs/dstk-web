@@ -5,11 +5,19 @@ export type Props<T extends FieldValues> = Omit<React.ComponentProps<'form'>, 'o
     onSubmit: SubmitHandler<T>;
 };
 
-export const Form = <T extends FieldValues>({ children, form, onSubmit, ...props }: Props<T>) => {
+export const Form = <T extends FieldValues>({
+    children,
+    className,
+    form,
+    onSubmit,
+    ...props
+}: Props<T>) => {
     return (
         <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} {...props}>
-                <fieldset disabled={form.formState.isSubmitting}>{children}</fieldset>
+                <fieldset className={className} disabled={form.formState.isSubmitting}>
+                    {children}
+                </fieldset>
             </form>
         </FormProvider>
     );
