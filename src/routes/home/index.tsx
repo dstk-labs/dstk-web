@@ -1,11 +1,19 @@
-import { Avatar } from '@/components/avatar';
 import { RiAddFill } from '@remixicon/react';
-import { Button, Card } from '@tremor/react';
-import { Link } from 'react-router-dom';
+import { Button, Card, Divider } from '@tremor/react';
 
-function ContentPlaceholder() {
+import { cn } from '@/lib';
+import { Avatar } from '@/components/avatar';
+import { Header, Link, Text, Title } from '@/components/typography';
+
+function ContentPlaceholder({ className, ...props }: React.ComponentProps<'div'>) {
     return (
-        <div className='relative h-full overflow-hidden rounded bg-gray-50 dark:bg-dark-tremor-background-subtle'>
+        <div
+            className={cn(
+                'relative h-full overflow-hidden rounded bg-gray-50 dark:bg-dark-tremor-background-subtle',
+                className,
+            )}
+            {...props}
+        >
             <svg
                 className='absolute inset-0 h-full w-full stroke-gray-200 dark:stroke-gray-700'
                 fill='none'
@@ -28,23 +36,21 @@ function ContentPlaceholder() {
     );
 }
 
-// TODO: Get User Info from Server
+/* Add the following API actions:
+    - Get User by User ID (or get current user)
+*/
 
 export const Home = () => {
     return (
-        <>
-            <div className='flex flex-col gap-12 px-4 sm:px-6 lg:px-8'>
+        <div className='flex flex-col gap-4'>
+            <div className='flex flex-col gap-12'>
                 <header>
                     <div className='flex items-center justify-between'>
                         <div className='flex gap-2'>
                             <Avatar className='h-14 w-14'>SO</Avatar>
                             <div className='flex flex-col'>
-                                <h3 className='text-tremor-title font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong'>
-                                    Welcome back, Steve O
-                                </h3>
-                                <p className='text-tremor-default leading-6 text-tremor-content dark:text-dark-tremor-content'>
-                                    odeastephen1@gmail.com
-                                </p>
+                                <Title>Welcome back, Steve O</Title>
+                                <Text className='leading-6'>odeastephen1@gmail.com</Text>
                             </div>
                         </div>
                         <Button icon={RiAddFill}>Create Project</Button>
@@ -52,46 +58,29 @@ export const Home = () => {
                 </header>
                 <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                     <div className='flex flex-col gap-4'>
-                        <Card className='h-36 rounded-tremor-small p-2'>
-                            <ContentPlaceholder />
-                        </Card>
-                        <Card className='h-36 rounded-tremor-small p-2'>
-                            <ContentPlaceholder />
-                        </Card>
-                        <Card className='h-36 rounded-tremor-small p-2'>
-                            <ContentPlaceholder />
-                        </Card>
-                        <Card className='h-36 rounded-tremor-small p-2'>
-                            <ContentPlaceholder />
-                        </Card>
+                        {[0, 1, 2, 3].map((placeholder) => (
+                            <Card className='h-36 p-2' key={placeholder}>
+                                <ContentPlaceholder />
+                            </Card>
+                        ))}
                         <div className='block sm:hidden'>
-                            <Button variant='light'>
-                                <Link to='/dashboard/projects'>See all projects</Link>
-                            </Button>
+                            <Link to='/dashboard/projects'>See all projects</Link>
                         </div>
                     </div>
-                    <Card className='flex flex-col rounded-tremor-small p-0'>
-                        <div className='border-b border-tremor-border px-4 py-2 dark:border-dark-tremor-border'>
-                            <h3 className='text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
-                                Recent Activity
-                            </h3>
-                        </div>
-                        <div className='h-36 sm:h-0 sm:grow p-2'>
-                            <ContentPlaceholder />
-                        </div>
-                        <div className='border-t border-tremor-border px-4 py-2 dark:border-dark-tremor-border'>
-                            <Button variant='light'>
-                                <Link to='/dashboard/activity'>See All Activity</Link>
-                            </Button>
+                    <Card>
+                        <div className='h-full flex flex-col gap-2'>
+                            <Header>Recent Activity</Header>
+                            <Divider className='my-4' />
+                            <ContentPlaceholder className='h-36 sm:h-0 sm:grow' />
+                            <Divider className='my-4' />
+                            <Link to='/dashboard/activity'>See All Activity</Link>
                         </div>
                     </Card>
                 </div>
             </div>
-            <div className='hidden sm:block mt-4 px-4 sm:px-6 lg:px-8'>
-                <Button variant='light'>
-                    <Link to='/dashboard/projects'>See all projects</Link>
-                </Button>
+            <div className='hidden sm:block'>
+                <Link to='/dashboard/projects'>See All Projects</Link>
             </div>
-        </>
+        </div>
     );
 };

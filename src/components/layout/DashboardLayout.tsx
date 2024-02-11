@@ -134,7 +134,7 @@ export const DashboardLayout = () => {
             </div>
             <div className='grow py-6 bg-tremor-background-muted dark:bg-dark-tremor-background-muted'>
                 {/* Page Content */}
-                <main>
+                <main className='px-4 sm:px-6 lg:px-8'>
                     <Outlet />
                 </main>
             </div>
