@@ -1,10 +1,4 @@
-import {
-    ApolloClient,
-    createHttpLink,
-    createQueryPreloader,
-    from,
-    InMemoryCache,
-} from '@apollo/client';
+import { ApolloClient, createHttpLink, from, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { toast } from 'sonner';
@@ -39,5 +33,3 @@ export const apolloClient = new ApolloClient({
     link: from([authLink, errorLink, httpLink]),
     cache: new InMemoryCache(),
 });
-
-export const preloadQuery = createQueryPreloader(apolloClient);

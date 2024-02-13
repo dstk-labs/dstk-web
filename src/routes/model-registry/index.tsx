@@ -1,125 +1,67 @@
-import { Suspense, useTransition } from 'react';
-import {
-    gql,
-    useQueryRefHandlers,
-    type OperationVariables,
-    type QueryReference,
-    type TypedDocumentNode,
-} from '@apollo/client';
-import { Button, Card, Divider, TabGroup, TabPanel, TabPanels, TextInput } from '@tremor/react';
-import { Link, useLoaderData } from 'react-router-dom';
+import { Card, Divider, TabGroup, TabPanel, TabPanels } from '@tremor/react';
+import { useNavigate } from 'react-router-dom';
 
-import { preloadQuery } from '@/lib';
-
-import { DataView } from '@/components/data-view';
-import { Fallback } from '@/components/fallback';
-import { Header } from '@/components/typography';
-import { VerticalDivider } from '@/components/vertical-divider';
-import type { MLModelList } from '@/types/MLModel';
-
+import { useListModels } from './api';
 import {
     ArchiveModal,
     ModelRegistryCards,
+    ModelRegistryCardsLoading,
+    ModelRegistryError,
+    ModelRegistryHeader,
     ModelRegistryPagination,
     ModelRegistryTable,
+    ModelRegistryTableLoading,
 } from './components';
 
-const LIST_MODELS: TypedDocumentNode<MLModelList> = gql`
-    query ListMLModels($after: String, $first: Limit, $modelName: String) {
-        listMLModels(after: $after, first: $first, modelName: $modelName) {
-            edges {
-                cursor
-                node {
-                    isArchived
-                    modelId
-                    modelName
-                    currentModelVersion {
-                        numericVersion
-                    }
-                    createdBy {
-                        userName
-                    }
-                    dateModified
-                }
-            }
-            pageInfo {
-                hasPreviousPage
-                hasNextPage
-                continuationToken
-            }
-        }
+export const ModelRegistry = () => {
+    const navigate = useNavigate();
+    const { data, loading, error } = useListModels();
+
+    if (error) {
+        return <ModelRegistryError />;
     }
-`;
 
-const useModelRegistryLoader = () => preloadQuery(LIST_MODELS);
-
-const ModelRegistry = () => {
-    const [isPending, startTransition] = useTransition();
-
-    const queryRef = useLoaderData() as QueryReference<MLModelList>;
-    const { refetch } = useQueryRefHandlers(queryRef);
-
-    const handleRefetch = (variables?: Partial<OperationVariables> | undefined) => {
-        startTransition(() => {
-            refetch(variables);
-        });
+    const Models = () => {
+        if (loading || (data && data.listMLModels)) {
+            return (
+                <TabPanels>
+                    <TabPanel>
+                        {loading ? (
+                            <ModelRegistryCardsLoading />
+                        ) : (
+                            data && <ModelRegistryCards mlModelList={data} navigateFn={navigate} />
+                        )}
+                    </TabPanel>
+                    <TabPanel>
+                        {loading ? (
+                            <ModelRegistryTableLoading />
+                        ) : (
+                            data && <ModelRegistryTable mlModelList={data} navigateFn={navigate} />
+                        )}
+                    </TabPanel>
+                </TabPanels>
+            );
+        }
     };
 
     return (
-        <>
+        <div className='px-4 sm:px-6 lg:px-8'>
             <Card>
                 <TabGroup>
-                    <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-0'>
-                        <Header>Model Registry</Header>
-                        <div className='flex flex-col gap-4 md:flex-row md:items-center'>
-                            <div className='flex items-center gap-4'>
-                                <TextInput
-                                    onChange={(e) => handleRefetch({ modelName: e.target.value })}
-                                    placeholder='Search Models'
-                                />
-                                <VerticalDivider className='hidden md:block' />
-                                <DataView className='-mr-3 w-[135px]' />
-                            </div>
-                            <VerticalDivider className='hidden md:block' />
-                            <Link to='/dashboard/models/create'>
-                                <Button disabled={isPending}>Add Model</Button>
-                            </Link>
-                        </div>
-                    </div>
+                    <ModelRegistryHeader navigateFn={navigate} />
                     <Divider className='my-4' />
-                    <TabPanels>
-                        <TabPanel>
-                            <TabPanel className='pt-6'>
-                                <Suspense fallback={<Fallback />}>
-                                    <ModelRegistryCards isPending={isPending} queryRef={queryRef} />
-                                </Suspense>
-                            </TabPanel>
-                        </TabPanel>
-                        <TabPanel className='pt-6'>
-                            <Suspense fallback={<Fallback />}>
-                                <ModelRegistryTable isPending={isPending} queryRef={queryRef} />
-                            </Suspense>
-                        </TabPanel>
-                    </TabPanels>
-                    <Divider className='my-4' />
-                    <Suspense>
-                        <ModelRegistryPagination
-                            isPending={isPending}
-                            onRefetch={handleRefetch}
-                            queryRef={queryRef}
-                        />
-                    </Suspense>
+                    <Models />
                 </TabGroup>
+                <div className='mt-4'>
+                    <Divider />
+                    {data && (
+                        <ModelRegistryPagination
+                            continuationToken={data.listMLModels.pageInfo.continuationToken}
+                        />
+                    )}
+                </div>
             </Card>
             <ArchiveModal />
-        </>
+        </div>
     );
-};
-
-export const modelRegistryRoute = () => {
-    return {
-        index: true,
-        element: <ModelRegistry />,
-        loader: useModelRegistryLoader,
-    };
 };
