@@ -9,7 +9,7 @@ import {
     EmptyPlaceholderTitle,
 } from '@/components/empty-placeholder';
 
-export const ModelRegistryError = () => {
+export const ServerError = () => {
     return (
         <div className='px-4 sm:px-6 lg:px-8'>
             <Card>
@@ -17,7 +17,7 @@ export const ModelRegistryError = () => {
                     <EmptyPlaceholderContents>
                         <EmptyPlaceholderIcon className='h-7 w-7' Icon={ExclamationTriangleIcon} />
                         <EmptyPlaceholderTitle className='mt-2'>
-                            Whoops! Trouble loading data from the server.
+                            Whoops! We had some trouble loading data from the server.
                         </EmptyPlaceholderTitle>
                         <EmptyPlaceholderDescription>
                             Did you try turning it on and off again?

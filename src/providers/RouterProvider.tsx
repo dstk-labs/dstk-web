@@ -1,5 +1,7 @@
 import { createBrowserRouter, RouterProvider as Router } from 'react-router-dom';
 
+import { PrivateRoute, PublicRoute } from '@/components/auth';
+import { DashboardLayout } from '@/components/layout';
 import {
     AddTeamMember,
     APIKeys,
@@ -9,7 +11,7 @@ import {
     EditModel,
     Home,
     Login,
-    ModelRegistry,
+    modelRegistryRoute,
     ModelVersion,
     ModelVersionDetails,
     Register,
@@ -18,14 +20,8 @@ import {
     UploadFiles,
     UserSettings,
 } from '@/routes';
-import { GET_MODEL, LIST_TEAMS } from '@/hooks';
-import { apolloClient } from '@/lib';
-import { PrivateRoute, PublicRoute } from '@/components/auth';
-import { DashboardLayout } from '@/components/layout';
-import { MLModel } from '@/types/MLModel';
 import type { MLModelVersion } from '@/types/MLModelVersion';
 import type { Team } from '@/types/Team';
-import { GET_MODEL_VERSION } from '@/routes/model-version-details/api';
 
 export const RouterProvider = () => {
     const router = createBrowserRouter([
@@ -65,10 +61,7 @@ export const RouterProvider = () => {
                                 crumb: () => 'Models',
                             },
                             children: [
-                                {
-                                    element: <ModelRegistry />,
-                                    index: true,
-                                },
+                                modelRegistryRoute(),
                                 {
                                     path: '/dashboard/models/create',
                                     element: <CreateModel />,
@@ -78,18 +71,9 @@ export const RouterProvider = () => {
                                 },
                                 {
                                     path: '/dashboard/models/:modelId',
-                                    loader: async ({ params }) => {
-                                        const { data } = await apolloClient.query({
-                                            query: GET_MODEL,
-                                            variables: {
-                                                modelId: params.modelId,
-                                            },
-                                        });
-
-                                        return (data && data.getMLModel) || [];
-                                    },
                                     handle: {
-                                        crumb: (data: MLModel) => data.modelName,
+                                        crumb: (data?: MLModelVersion) =>
+                                            (data && data.modelId.modelId) || 'Async is fun',
                                     },
                                     children: [
                                         {
@@ -112,19 +96,10 @@ export const RouterProvider = () => {
                                         },
                                         {
                                             path: '/dashboard/models/:modelId/:versionId',
-                                            loader: async ({ params }) => {
-                                                const { data } = await apolloClient.query({
-                                                    query: GET_MODEL_VERSION,
-                                                    variables: {
-                                                        modelVersionId: params.versionId,
-                                                    },
-                                                });
-
-                                                return (data && data.getMLModelVersion) || [];
-                                            },
                                             handle: {
-                                                crumb: (data: MLModelVersion) =>
-                                                    `v${data.numericVersion}`,
+                                                crumb: (data?: MLModelVersion) =>
+                                                    (data && `v${data.numericVersion}`) ||
+                                                    'Async is super duper fun',
                                             },
                                             children: [
                                                 {
@@ -145,7 +120,7 @@ export const RouterProvider = () => {
                             ],
                         },
                         {
-                            path: '/dashboard/teams',
+                            path: 'dashboard/teams',
                             handle: {
                                 crumb: () => 'Teams',
                             },
@@ -155,27 +130,17 @@ export const RouterProvider = () => {
                                     index: true,
                                 },
                                 {
-                                    path: '/dashboard/teams/create',
+                                    path: 'dashboard/teams/create',
                                     element: <CreateTeam />,
                                     handle: {
                                         crumb: () => 'Create',
                                     },
                                 },
                                 {
-                                    path: '/dashboard/teams/:teamId',
-                                    id: 'team-details',
-                                    loader: async ({ params }) => {
-                                        const { data } = await apolloClient.query({
-                                            query: LIST_TEAMS,
-                                            variables: {
-                                                teamId: params.teamId,
-                                            },
-                                        });
-
-                                        return (data && data.listTeams[0]) || [];
-                                    },
+                                    path: 'dashboard/teams/:teamId',
                                     handle: {
-                                        crumb: (data: Team) => data.name,
+                                        crumb: (data?: Team) =>
+                                            (data && data.name) || 'BILLIE JEAN',
                                     },
                                     children: [
                                         {
@@ -183,7 +148,7 @@ export const RouterProvider = () => {
                                             index: true,
                                         },
                                         {
-                                            path: '/dashboard/teams/:teamId/add-member',
+                                            path: 'dashboard/teams/:teamId/add-member',
                                             element: <AddTeamMember />,
                                             handle: {
                                                 crumb: () => 'Add Team Member',
@@ -194,7 +159,7 @@ export const RouterProvider = () => {
                             ],
                         },
                         {
-                            path: '/dashboard/settings',
+                            path: 'dashboard/settings',
                             handle: {
                                 crumb: () => 'Settings',
                             },
@@ -204,7 +169,7 @@ export const RouterProvider = () => {
                                     index: true,
                                 },
                                 {
-                                    path: '/dashboard/settings/api-keys',
+                                    path: 'dashboard/settings/api-keys',
                                     element: <APIKeys />,
                                     handle: {
                                         crumb: () => 'API Keys',

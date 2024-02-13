@@ -1,23 +1,29 @@
+import { type QueryReference, useReadQuery } from '@apollo/client';
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@tremor/react';
-import type { NavigateFunction } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import { CircleIcon } from '@/components/icons';
+import { cn } from '@/lib';
 import type { MLModelList } from '@/types/MLModel';
 
-import { ModelRegistryActions } from './ModelRegistryActions';
 import { NoModelsFound } from './NoModelsFound';
+import { ModelRegistryActions } from './ModelRegistryActions';
+import { ModelStatusIndicator } from './ModelStatusIndicator';
 
 const HEADERS = ['Name', 'Total Versions', 'Status', 'Created By', 'Last Modified', 'Actions'];
 
 type ModelRegistryTableProps = {
-    mlModelList: MLModelList;
-    navigateFn: NavigateFunction;
+    isPending: boolean;
+    queryRef: QueryReference<MLModelList>;
 };
 
-export const ModelRegistryTable = ({ mlModelList, navigateFn }: ModelRegistryTableProps) => {
+export const ModelRegistryTable = ({ isPending, queryRef }: ModelRegistryTableProps) => {
+    const navigate = useNavigate();
+
+    const { data } = useReadQuery(queryRef);
+
     return (
-        <div className='mt-6'>
-            {mlModelList.listMLModels.edges.length === 0 ? (
+        <div className={cn(isPending && 'opacity-50')}>
+            {data.listMLModels.edges.length === 0 ? (
                 <NoModelsFound />
             ) : (
                 <Table>
@@ -34,11 +40,11 @@ export const ModelRegistryTable = ({ mlModelList, navigateFn }: ModelRegistryTab
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {mlModelList.listMLModels.edges.map((edge) => (
+                        {data.listMLModels.edges.map((edge) => (
                             <TableRow
                                 className='hover:cursor-pointer hover:bg-tremor-background-muted hover:dark:bg-dark-tremor-background-muted'
                                 key={edge.node.modelId}
-                                onClick={() => navigateFn(`/dashboard/models/${edge.node.modelId}`)}
+                                onClick={() => navigate(`/dashboard/models/${edge.node.modelId}`)}
                             >
                                 <TableCell className='font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>
                                     {edge.node.modelName}
@@ -49,10 +55,7 @@ export const ModelRegistryTable = ({ mlModelList, navigateFn }: ModelRegistryTab
                                         0}
                                 </TableCell>
                                 <TableCell>
-                                    <span className='inline-flex items-center gap-x-1.5 rounded-tremor-small bg-emerald-100 px-2 py-1 text-tremor-label font-medium text-emerald-800 ring-1 ring-inset ring-emerald-600/10 dark:bg-emerald-500/10 dark:text-emerald-500 dark:ring-emerald-500/20'>
-                                        <CircleIcon className='bg-emerald-500' />
-                                        Live
-                                    </span>
+                                    <ModelStatusIndicator isArchived={edge.node.isArchived} />
                                 </TableCell>
                                 <TableCell>{edge.node.createdBy.userName}</TableCell>
                                 <TableCell>
@@ -64,7 +67,7 @@ export const ModelRegistryTable = ({ mlModelList, navigateFn }: ModelRegistryTab
                                     <ModelRegistryActions
                                         modelId={edge.node.modelId}
                                         modelName={edge.node.modelName}
-                                        navigateFn={navigateFn}
+                                        navigateFn={navigate}
                                     />
                                 </TableCell>
                             </TableRow>

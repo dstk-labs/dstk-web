@@ -1,5 +1,7 @@
+import { gql, useMutation, type TypedDocumentNode } from '@apollo/client';
 import { TextInput } from '@tremor/react';
 import { useAtom } from 'jotai';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useZodForm } from '@/hooks';
@@ -15,15 +17,24 @@ import {
 } from '@/components/alert-dialog';
 import { Form, InputField } from '@/components/form';
 import { Label } from '@/components/label';
+import type { ArchiveMLModel } from '@/types/MLModel';
 
 import { archiveModalOpenAtom, selectedModelAtom } from '../atoms';
-import { useArchiveModel } from '../api';
+
+const ARCHIVE_MODEL: TypedDocumentNode<ArchiveMLModel> = gql`
+    mutation ArchiveModel($modelId: String!) {
+        archiveModel(modelId: $modelId) {
+            isArchived
+            modelName
+        }
+    }
+`;
 
 export const ArchiveModal = () => {
     const [archiveModalOpen, setArchiveModelOpen] = useAtom(archiveModalOpenAtom);
     const [selectedModel, setSelectedModel] = useAtom(selectedModelAtom);
 
-    const [archiveModel, { loading }] = useArchiveModel();
+    const [archiveModel, { loading }] = useMutation(ARCHIVE_MODEL);
 
     const schema = z
         .object({ modelName: z.string() })
@@ -47,9 +58,17 @@ export const ArchiveModal = () => {
             variables: {
                 modelId: selectedModel.modelId,
             },
+            refetchQueries: ['ListMLModels'],
+            onCompleted: (data) => {
+                form.reset();
+                setArchiveModelOpen(false);
+                toast.info(
+                    `${data.archiveModel.modelName} ${
+                        data.archiveModel.isArchived ? 'has been archived' : 'is no longer archived'
+                    }.`,
+                );
+            },
         });
-        setArchiveModelOpen(false);
-        form.reset();
     };
 
     return (
@@ -60,10 +79,12 @@ export const ArchiveModal = () => {
                 Are you sure you want to perform this action? Edits can no longer be made to a model
                 once it is archived.
             </AlertDialogDescription>
-            <AlertDialogBody>
-                <Label>Model name</Label>
-                <TextInput placeholder={selectedModel.modelName} className='mt-2' disabled />
-                <Form className='mt-4' form={form} id='archive-model' onSubmit={onSubmit}>
+            <AlertDialogBody className='flex flex-col gap-4'>
+                <div className='flex flex-col gap-2'>
+                    <Label>Model Name</Label>
+                    <TextInput placeholder={selectedModel.modelName} disabled />
+                </div>
+                <Form form={form} id='archive-model' onSubmit={onSubmit}>
                     <InputField
                         label='Confirm Model Name'
                         placeholder={selectedModel.modelName}
