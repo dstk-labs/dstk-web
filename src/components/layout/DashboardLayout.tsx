@@ -99,7 +99,7 @@ export const DashboardLayout = () => {
                             <div className='flex items-center sm:hidden'>
                                 <Dropdown>
                                     <DropdownTrigger asChild>
-                                        <Button variant='ghost'>
+                                        <Button className='-ml-4' variant='ghost'>
                                             <RiMenuLine className='h-5 w-5' />
                                         </Button>
                                     </DropdownTrigger>
