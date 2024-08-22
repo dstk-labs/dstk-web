@@ -24,7 +24,7 @@ export const modelLoader = async ({ params }: LoaderFunctionArgs) => {
     }).toPromise();
 };
 
-export const ModelRoute = () => {
+export const ModelVersionsRoute = () => {
     const queryRef = useLoaderData() as Awaited<ReturnType<typeof modelLoader>>;
     const { data } = useReadQuery(queryRef);
 

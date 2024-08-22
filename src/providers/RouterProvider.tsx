@@ -24,7 +24,7 @@ import {
     UserSettings,
 } from '@/routes';
 import type { MLModelVersion, Team } from '@/types/api';
-import { modelLoader } from '../routes/model-versions/ModelRoute';
+import { modelLoader } from '../routes/model-versions/ModelVersionsRoute';
 import { apolloClient } from '@/lib';
 import { GET_MODEL } from '@/features/model/api/getModel';
 
@@ -82,10 +82,10 @@ export const RouterProvider = () => {
                                     children: [
                                         {
                                             lazy: async () => {
-                                                const { ModelRoute } = await import(
-                                                    '../routes/model-versions/ModelRoute'
+                                                const { ModelVersionsRoute } = await import(
+                                                    '../routes/model-versions/ModelVersionsRoute'
                                                 );
-                                                return { Component: ModelRoute };
+                                                return { Component: ModelVersionsRoute };
                                             },
                                             handle: {
                                                 crumb: () => {
