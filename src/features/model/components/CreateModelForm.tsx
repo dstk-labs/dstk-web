@@ -74,7 +74,7 @@ export const CreateModelForm = () => {
         <section className='flex flex-col gap-2'>
             <div className='flex flex-col gap-12'>
                 <h1 className='text-lg font-bold text-gray-900 dark:text-gray-50'>
-                    Create New Model Version
+                    Create New Model
                 </h1>
                 <Form
                     className='grid grid-cols-1 gap-4 sm:grid-cols-6'
